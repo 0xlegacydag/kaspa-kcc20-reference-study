@@ -1,0 +1,12 @@
+# Every text file is kept with LF line endings on every system. The record of
+# the run names launch/launch_send.py by its SHA-256, so this line must stay.
+* text=auto eol=lf
+
+# The files of a run are kept byte for byte as they were written: the record
+# names the chain file by its SHA-256, and the logs came from a Windows console.
+# The fixtures of the tests are kept byte for byte as well.
+launch/results/** -text
+launch/tests/*.json -text
+
+# The page of a run is prose, not program output: LF like every other text file.
+launch/results/**/README.md text eol=lf

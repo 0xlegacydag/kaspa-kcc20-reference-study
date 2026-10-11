@@ -1,0 +1,170 @@
+KCC-20 reference token on testnet-10: the chain of a real run, built offline. NOTHING WAS SENT.
+Token name (a label, nothing on chain carries it): 0xlegacydag
+Funding coin d61865b0a1fca270936bd33d34898abd3fafd993ab8cd21daf6014f93e248ace:0 of 30.00000000 KAS. Every covenant coin holds 1.00000000 KAS.
+Fee rate 400 sompi per gram; the fee of a transaction is at least the fee rate times the larger of its fee mass (the mass a node charges its fee floor on) and the storage mass a node calculates for it, both read from that very transaction, and equal to that product whenever the calculation settles; in this chain it did not settle, and the larger of the last two candidates was taken, for 0 of the 13 steps and 0 of the 3 forbidden moves. Cap on all fees: 15.00000000 KAS.
+Every step was accepted by scripts, consensus on submission, the mempool and inside a block.
+Covenant id: 0d81e3e1d9f1c9568acd38e932f22eef1ea96dd6480d351e47cf61c692a4716a
+
+step                   | what happens / coins after the step
+----------------------------------------------------------------------------------------------------
+01 launch              | the issuer's coin creates the minter (25 to mint, at most 10 per mint) and the seed
+                       | transaction 0f6a30b3b5a6b3b086b759a26db094513aeb3b6bc1239860963994f58c0466de
+                       | fee 0.32011200 KAS (floor 0.00254000) | fee mass 2540 | storage mass 80028 | fees so far 0.32011200 KAS | locked 2.00000000 KAS
+                       |   minter of the issuer: 25 left to mint [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   change of the issuer [27.67988800 KAS]
+02 mint                | the minter mints 10 tokens to Alice
+                       | transaction d810a15d1c470f700f66fc86c7be84f33f21f2f59d3217fe4313bc6f366c9722
+                       | fee 0.30896400 KAS (floor 0.01303000) | fee mass 13030 | storage mass 77241 | fees so far 0.62907600 KAS | locked 3.00000000 KAS
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   minter of the issuer: 15 left to mint [1.00000000 KAS]
+                       |   token coin of Alice: 10 tokens [1.00000000 KAS]
+                       |   change of the issuer [26.37092400 KAS]
+03 transfer            | Alice moves 4 tokens to Bob and keeps 6 (one coin in, two out)
+                       | transaction c4d393e714fd7288373f61d6f4e6db4383b5ca8855bd9079538a389bd09eae7c
+                       | fee 0.30844400 KAS (floor 0.00963600) | fee mass 9636 | storage mass 77111 | fees so far 0.93752000 KAS | locked 4.00000000 KAS
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   minter of the issuer: 15 left to mint [1.00000000 KAS]
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   token coin of Alice: 6 tokens [1.00000000 KAS]
+                       |   change of the issuer [25.06248000 KAS]
+04 seed create         | the seed creates a zero-token coin for Bob, open to payments (threshold 0)
+                       | transaction e2396f7b70f0d571405bdfc67000b1b76d93ea259f737a62e2aed03dfef1eba7
+                       | fee 0.30786800 KAS (floor 0.01170000) | fee mass 11700 | storage mass 76967 | fees so far 1.24538800 KAS | locked 5.00000000 KAS
+                       |   minter of the issuer: 15 left to mint [1.00000000 KAS]
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   token coin of Alice: 6 tokens [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   token coin of Bob: 0 tokens, open to payments [1.00000000 KAS]
+                       |   change of the issuer [23.75461200 KAS]
+05 borrowed receive    | Alice pays 3 tokens into Bob's open coin; Bob does not sign
+                       | transaction 02968cd4ad7a24c82448267b4017670505c69b36b66af44ddb533d5cf94f5c5f
+                       | fee 0.28288400 KAS (floor 0.01782200) | fee mass 17822 | storage mass 70721 | fees so far 1.52827200 KAS | locked 5.00000000 KAS
+                       |   minter of the issuer: 15 left to mint [1.00000000 KAS]
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens, open to payments [1.00000000 KAS]
+                       |   token coin of Alice: 3 tokens [1.00000000 KAS]
+                       |   change of the issuer [23.47172800 KAS]
+06 minter split        | the minter hands 5 of its 15 to a new minter owned by Bob
+                       | transaction 067572570985f44903c2485ea772e098b1b460f3c25aeae8e2b6483e548370c2
+                       | fee 0.30710400 KAS (floor 0.00511000) | fee mass 5110 | storage mass 76776 | fees so far 1.83537600 KAS | locked 6.00000000 KAS
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens, open to payments [1.00000000 KAS]
+                       |   token coin of Alice: 3 tokens [1.00000000 KAS]
+                       |   minter of the issuer: 10 left to mint [1.00000000 KAS]
+                       |   minter of Bob: 5 left to mint [1.00000000 KAS]
+                       |   change of the issuer [22.16462400 KAS]
+07 mint from the split | Bob's minter mints 2 tokens to Bob
+                       | transaction 2806c76782e7bfda79508fdc4f0c204d80abbeee8f89dd837ba8a5da69d035c4
+                       | fee 0.30637600 KAS (floor 0.01303000) | fee mass 13030 | storage mass 76594 | fees so far 2.14175200 KAS | locked 7.00000000 KAS
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens, open to payments [1.00000000 KAS]
+                       |   token coin of Alice: 3 tokens [1.00000000 KAS]
+                       |   minter of the issuer: 10 left to mint [1.00000000 KAS]
+                       |   minter of Bob: 3 left to mint [1.00000000 KAS]
+                       |   token coin of Bob: 2 tokens [1.00000000 KAS]
+                       |   change of the issuer [20.85824800 KAS]
+08 reclaim into        | Bob's minter (3 left) retires into the issuer's minter; Bob signs and gets the deposit
+                       | transaction 3122ba0632f1a0e601915bdbab0c60c987071c419fd30b7d5b7d6ab11a079d14
+                       | fee 0.15819200 KAS (floor 0.00926600) | fee mass 9266 | storage mass 39548 | fees so far 2.29994400 KAS | locked 6.00000000 KAS
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens, open to payments [1.00000000 KAS]
+                       |   token coin of Alice: 3 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 2 tokens [1.00000000 KAS]
+                       |   minter of the issuer: 13 left to mint [1.00000000 KAS]
+                       |   deposit back to Bob [1.00000000 KAS]
+                       |   change of the issuer [20.70005600 KAS]
+09 mint                | the minter mints 10 tokens to Alice
+                       | transaction 78e23990321b7decd966c14887b59806310b6faed043a3cbe44de2489c989da5
+                       | fee 0.30547600 KAS (floor 0.01303000) | fee mass 13030 | storage mass 76369 | fees so far 2.60542000 KAS | locked 7.00000000 KAS
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens, open to payments [1.00000000 KAS]
+                       |   token coin of Alice: 3 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 2 tokens [1.00000000 KAS]
+                       |   deposit back to Bob [1.00000000 KAS]
+                       |   minter of the issuer: 3 left to mint [1.00000000 KAS]
+                       |   token coin of Alice: 10 tokens [1.00000000 KAS]
+                       |   change of the issuer [19.39458000 KAS]
+10 last mint           | the minter mints its last 3 tokens to Bob
+                       | transaction da0e499e795454c2dbecea6a38ccbce336829c916315f95f25096a8e7a309961
+                       | fee 0.30456800 KAS (floor 0.01303000) | fee mass 13030 | storage mass 76142 | fees so far 2.90998800 KAS | locked 8.00000000 KAS
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens, open to payments [1.00000000 KAS]
+                       |   token coin of Alice: 3 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 2 tokens [1.00000000 KAS]
+                       |   deposit back to Bob [1.00000000 KAS]
+                       |   token coin of Alice: 10 tokens [1.00000000 KAS]
+                       |   minter of the issuer: 0 left to mint [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens [1.00000000 KAS]
+                       |   change of the issuer [18.09001200 KAS]
+11 minter reclaim      | the issuer closes the empty minter and gets the deposit
+                       | transaction da5a7ffe0f388af7b4f56e2652aa2750784e46782df90a72abdef51ca4bde74e
+                       | fee 0.02336000 KAS (floor 0.00518500) | fee mass 5185 | storage mass 5840 | fees so far 2.93334800 KAS | locked 7.00000000 KAS
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens, open to payments [1.00000000 KAS]
+                       |   token coin of Alice: 3 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 2 tokens [1.00000000 KAS]
+                       |   deposit back to Bob [1.00000000 KAS]
+                       |   token coin of Alice: 10 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens [1.00000000 KAS]
+                       |   deposit back to the issuer [1.00000000 KAS]
+                       |   change of the issuer [18.06665200 KAS]
+12 seed split          | the seed creates a second seed owned by Bob
+                       | transaction e00b6f02fca077c329034dde626d4536089bdd3e1b86e6b492c3e5b55e97be65
+                       | fee 0.30350800 KAS (floor 0.00399000) | fee mass 3990 | storage mass 75877 | fees so far 3.23685600 KAS | locked 8.00000000 KAS
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens, open to payments [1.00000000 KAS]
+                       |   token coin of Alice: 3 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 2 tokens [1.00000000 KAS]
+                       |   deposit back to Bob [1.00000000 KAS]
+                       |   token coin of Alice: 10 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens [1.00000000 KAS]
+                       |   deposit back to the issuer [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   seed of Bob [1.00000000 KAS]
+                       |   change of the issuer [16.76314400 KAS]
+13 seed reclaim        | Bob's seed is closed next to the issuer's; Bob signs and gets the deposit
+                       | transaction c5f46d16f2df63f1c86584de96942ae6ab9a0210880a4805d5040ed6fc72bcde
+                       | fee 0.14912400 KAS (floor 0.00661000) | fee mass 6610 | storage mass 37281 | fees so far 3.38598000 KAS | locked 7.00000000 KAS
+                       |   token coin of Bob: 4 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens, open to payments [1.00000000 KAS]
+                       |   token coin of Alice: 3 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 2 tokens [1.00000000 KAS]
+                       |   deposit back to Bob [1.00000000 KAS]
+                       |   token coin of Alice: 10 tokens [1.00000000 KAS]
+                       |   token coin of Bob: 3 tokens [1.00000000 KAS]
+                       |   deposit back to the issuer [1.00000000 KAS]
+                       |   seed of the issuer [1.00000000 KAS]
+                       |   deposit back to Bob [1.00000000 KAS]
+                       |   change of the issuer [16.61402000 KAS]
+----------------------------------------------------------------------------------------------------
+Forbidden moves, built from coins that are unspent after step 13. Each must be refused; none changes the coins above.
+B1 transfer without the owner's signature
+                       | Alice's 10 tokens are moved to Bob with a witness signed by Bob's key, not Alice's
+                       | transaction d6fcdb55f0b88bc35ce204eb3857c7833b16d772bc722e02ef8f5cad5f2c5d5d
+                       | refused by the scripts at input 0, rule K-38: script ran, but verification failed
+                       | the honest twin is accepted; both pay 0.14199200 KAS
+B2 more tokens out than in
+                       | Alice signs a transfer of her 3-token coin into 3 tokens for herself and 1 for Bob: 4 out of 3
+                       | transaction 7fe40b514e880a246bfd4e4f6b4de099e2759f01bdd23eb33c2e1297cfad6bdc
+                       | refused by the scripts at input 0, rule K-37: script ran, but verification failed
+                       | the honest twin is accepted; both pay 0.30217600 KAS
+B3 the seed creates a coin that already holds tokens
+                       | the issuer's seed creates a token coin for Bob that holds 5 tokens nobody minted
+                       | transaction 911cab536d942c7d5e80d551eefe3fa580451c6967eb9a1853a406c43710918e
+                       | refused by the scripts at input 0, rule S-12: script ran, but verification failed
+                       | the honest twin is accepted; both pay 0.30217600 KAS
+----------------------------------------------------------------------------------------------------
+  fees, all steps                    3.38598000 KAS
+  locked in covenant coins, peak     8.00000000 KAS
+  locked in covenant coins, end      7.00000000 KAS
+  deposits returned to keys          3.00000000 KAS
+  change of the issuer at the end    16.61402000 KAS
+  tokens minted                      25

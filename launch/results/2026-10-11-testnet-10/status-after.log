@@ -1,0 +1,35 @@
+2026-10-11 12:29:42 UTC
+via     : wss://muon-10.kaspa.blue/kaspa/testnet-10/wrpc/borsh, node version 2.1.0
+step  1 '01 launch': on chain; 0 of 3 outputs unspent
+step  2 '02 mint': on chain; 0 of 3 outputs unspent
+step  3 '03 transfer': on chain; 1 of 3 outputs unspent
+step  4 '04 seed create': on chain; 0 of 3 outputs unspent
+step  5 '05 borrowed receive': on chain; 2 of 3 outputs unspent
+step  6 '06 minter split': on chain; 0 of 3 outputs unspent
+step  7 '07 mint from the split': on chain; 1 of 3 outputs unspent
+step  8 '08 reclaim into': on chain; 1 of 3 outputs unspent
+step  9 '09 mint': on chain; 1 of 3 outputs unspent
+step 10 '10 last mint': on chain; 1 of 3 outputs unspent
+step 11 '11 minter reclaim': on chain; 1 of 2 outputs unspent
+step 12 '12 seed split': on chain; 0 of 3 outputs unspent
+step 13 '13 seed reclaim': on chain; 3 of 3 outputs unspent
+probe 1 "B1 transfer without the owner's signature": no trace
+probe 2 'B2 more tokens out than in': no trace
+probe 3 'B3 the seed creates a coin that already holds tokens': no trace
+coins of the chain that are unspent now:
+  1.00000000 KAS  c4d393e714fd7288373f61d6f4e6db4383b5ca8855bd9079538a389bd09eae7c:0  covenant KCC20
+  1.00000000 KAS  02968cd4ad7a24c82448267b4017670505c69b36b66af44ddb533d5cf94f5c5f:0  covenant KCC20
+  1.00000000 KAS  02968cd4ad7a24c82448267b4017670505c69b36b66af44ddb533d5cf94f5c5f:1  covenant KCC20
+  1.00000000 KAS  2806c76782e7bfda79508fdc4f0c204d80abbeee8f89dd837ba8a5da69d035c4:1  covenant KCC20
+  1.00000000 KAS  3122ba0632f1a0e601915bdbab0c60c987071c419fd30b7d5b7d6ab11a079d14:1  deposit to 'bob'
+  1.00000000 KAS  78e23990321b7decd966c14887b59806310b6faed043a3cbe44de2489c989da5:1  covenant KCC20
+  1.00000000 KAS  da0e499e795454c2dbecea6a38ccbce336829c916315f95f25096a8e7a309961:1  covenant KCC20
+  1.00000000 KAS  da5a7ffe0f388af7b4f56e2652aa2750784e46782df90a72abdef51ca4bde74e:0  deposit to 'issuer'
+  1.00000000 KAS  c5f46d16f2df63f1c86584de96942ae6ab9a0210880a4805d5040ed6fc72bcde:0  covenant TokenSeed
+  1.00000000 KAS  c5f46d16f2df63f1c86584de96942ae6ab9a0210880a4805d5040ed6fc72bcde:1  deposit to 'bob'
+  16.61402000 KAS  c5f46d16f2df63f1c86584de96942ae6ab9a0210880a4805d5040ed6fc72bcde:2  change to 'issuer'
+on chain: the first 13 of 13 steps are on chain ('01 launch', '02 mint', '03 transfer', '04 seed create', '05 borrowed receive', '06 minter split', '07 mint from the split', '08 reclaim into', '09 mint', '10 last mint', '11 minter reclaim', '12 seed split', '13 seed reclaim'); the funding coin is spent
+balance: issuer   962.01791316 KAS in 7 coin(s) at kaspatest:qr9qu3z2cfv03506hxwct55hz00acg0wynz2c733cnhy0t9v0d4kg8gzyrlea
+balance: bob      21.98118900 KAS in 3 coin(s) at kaspatest:qp947566r49dz85sryktf2e3eys783hp2u527u0fnyynnhn937jtk4rz3q9m9
+balance: alice    0.00000000 KAS in 0 coin(s) at kaspatest:qpqhsayjhjz8846pr3cxxc4gfnpdawhn3cvlht3xyyqt839u3xnzy3v7q4ckw
+exit=0

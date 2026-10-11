@@ -1,0 +1,3 @@
+# Kaspa Python SDK, pinned. Official package name on PyPI: kaspa
+# Source: https://github.com/kaspanet/kaspa-python-sdk (release v2.1.0)
+kaspa==2.1.0

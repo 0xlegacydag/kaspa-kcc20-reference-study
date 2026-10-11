@@ -1,0 +1,107 @@
+started 2026-10-11 12:28:33 UTC
+file    : chain.json, SHA-256 fb4c8dee62d86fc7e82a3696e188b1f1dc6881f9906ca6f4a86d8f880e841d99
+check a  format, network, limits, gates              : ok
+check b  parties and their addresses                 : ok
+check c  transaction ids rebuilt by the SDK          : ok
+check d  linkage of the coins                        : ok
+check e  fees                                        : ok
+check f  outputs go to the contracts and the parties : ok
+check g  covenant id                                 : ok - derived by the SDK from the first step, 2 output(s)
+check h  locks from states                           : ok - recomputed for 27 covenant outputs
+check i  summary
+  token name    : 0xlegacydag (a label; nothing on chain carries it)
+  covenant id   : 0d81e3e1d9f1c9568acd38e932f22eef1ea96dd6480d351e47cf61c692a4716a
+  funding coin  : 30.00000000 KAS of 'issuer', d61865b0a1fca270936bd33d34898abd3fafd993ab8cd21daf6014f93e248ace:0
+  steps         : 13, each expected to be accepted
+  probes        : 3, each expected to be refused
+  fees          : 3.38598000 KAS over the steps (cap of the file 15.00000000, feerate 400 sompi per gram)
+  left locked   : 7.00000000 KAS in covenant coins after the last step
+  left plain    : 2.00000000 KAS to 'bob' (deposits and change of this chain)
+  left plain    : 17.61402000 KAS to 'issuer' (deposits and change of this chain)
+  tokens        : alice 13
+  tokens        : bob 12
+  tokens, total : 25 (the file says 25 minted)
+  seeds         : 1
+    step  1  01 launch: the issuer's coin creates the minter (25 to mint, at most 10 per mint) and the seed [fee 0.32011200]
+    step  2  02 mint: the minter mints 10 tokens to Alice [fee 0.30896400]
+    step  3  03 transfer: Alice moves 4 tokens to Bob and keeps 6 (one coin in, two out) [fee 0.30844400]
+    step  4  04 seed create: the seed creates a zero-token coin for Bob, open to payments (threshold 0) [fee 0.30786800]
+    step  5  05 borrowed receive: Alice pays 3 tokens into Bob's open coin; Bob does not sign [fee 0.28288400]
+    step  6  06 minter split: the minter hands 5 of its 15 to a new minter owned by Bob [fee 0.30710400]
+    step  7  07 mint from the split: Bob's minter mints 2 tokens to Bob [fee 0.30637600]
+    step  8  08 reclaim into: Bob's minter (3 left) retires into the issuer's minter; Bob signs and gets the deposit [fee 0.15819200]
+    step  9  09 mint: the minter mints 10 tokens to Alice [fee 0.30547600]
+    step 10  10 last mint: the minter mints its last 3 tokens to Bob [fee 0.30456800]
+    step 11  11 minter reclaim: the issuer closes the empty minter and gets the deposit [fee 0.02336000]
+    step 12  12 seed split: the seed creates a second seed owned by Bob [fee 0.30350800]
+    step 13  13 seed reclaim: Bob's seed is closed next to the issuer's; Bob signs and gets the deposit [fee 0.14912400]
+    probe 1  B1 transfer without the owner's signature: Alice's 10 tokens are moved to Bob with a witness signed by Bob's key, not Alice's
+    probe 2  B2 more tokens out than in: Alice signs a transfer of her 3-token coin into 3 tokens for herself and 1 for Bob: 4 out of 3
+    probe 3  B3 the seed creates a coin that already holds tokens: the issuer's seed creates a token coin for Bob that holds 5 tokens nobody minted
+via     : wss://vector-10.kaspa.green/kaspa/testnet-10/wrpc/borsh, node version 2.1.0
+estimate: priority bucket {'feerate': 2378.02758349116, 'estimatedSeconds': 0.10000000000000014}
+estimate: normal buckets  [{'feerate': 281.7444368579757, 'estimatedSeconds': 60.000000000000064}, {'feerate': 141.2964811781492, 'estimatedSeconds': 475.6876755155927}]
+estimate: low buckets     [{'feerate': 115.43603712077706, 'estimatedSeconds': 872.3517205046887}]
+feerate : the file was built at 400 sompi per gram; the node's priority estimate now gives 2379
+feerate : NOTE - the node now asks for more than the file pays; a step may wait or be refused for its fee
+on chain: the funding coin is at its owner's address, unspent, with the stated value and script; no step is on chain
+built   : the first step ('01 launch') builds for sending from the node's own entry of the funding coin; not submitted
+record  : results\2026-10-11-testnet-10\records\run-20261011T122836456950Z.jsonl
+before : issuer   974.40389316 KAS in 6 coin(s) at kaspatest:qr9qu3z2cfv03506hxwct55hz00acg0wynz2c733cnhy0t9v0d4kg8gzyrlea
+before : bob      19.98118900 KAS in 1 coin(s) at kaspatest:qp947566r49dz85sryktf2e3eys783hp2u527u0fnyynnhn937jtk4rz3q9m9
+before : alice    0.00000000 KAS in 0 coin(s) at kaspatest:qpqhsayjhjz8846pr3cxxc4gfnpdawhn3cvlht3xyyqt839u3xnzy3v7q4ckw
+step  1 '01 launch': submitting 0f6a30b3b5a6b3b086b759a26db094513aeb3b6bc1239860963994f58c0466de (fee 0.32011200 KAS)
+step  1 '01 launch': ACCEPTED 0f6a30b3b5a6b3b086b759a26db094513aeb3b6bc1239860963994f58c0466de
+step  1 '01 launch': all 3 outputs seen after 1.3 s, as expected
+step  2 '02 mint': submitting d810a15d1c470f700f66fc86c7be84f33f21f2f59d3217fe4313bc6f366c9722 (fee 0.30896400 KAS)
+step  2 '02 mint': ACCEPTED d810a15d1c470f700f66fc86c7be84f33f21f2f59d3217fe4313bc6f366c9722
+step  2 '02 mint': all 3 outputs seen after 2.7 s, as expected
+step  3 '03 transfer': submitting c4d393e714fd7288373f61d6f4e6db4383b5ca8855bd9079538a389bd09eae7c (fee 0.30844400 KAS)
+step  3 '03 transfer': ACCEPTED c4d393e714fd7288373f61d6f4e6db4383b5ca8855bd9079538a389bd09eae7c
+step  3 '03 transfer': all 3 outputs seen after 1.3 s, as expected
+step  4 '04 seed create': submitting e2396f7b70f0d571405bdfc67000b1b76d93ea259f737a62e2aed03dfef1eba7 (fee 0.30786800 KAS)
+step  4 '04 seed create': ACCEPTED e2396f7b70f0d571405bdfc67000b1b76d93ea259f737a62e2aed03dfef1eba7
+step  4 '04 seed create': all 3 outputs seen after 2.4 s, as expected
+step  5 '05 borrowed receive': submitting 02968cd4ad7a24c82448267b4017670505c69b36b66af44ddb533d5cf94f5c5f (fee 0.28288400 KAS)
+step  5 '05 borrowed receive': ACCEPTED 02968cd4ad7a24c82448267b4017670505c69b36b66af44ddb533d5cf94f5c5f
+step  5 '05 borrowed receive': all 3 outputs seen after 2.4 s, as expected
+step  6 '06 minter split': submitting 067572570985f44903c2485ea772e098b1b460f3c25aeae8e2b6483e548370c2 (fee 0.30710400 KAS)
+step  6 '06 minter split': ACCEPTED 067572570985f44903c2485ea772e098b1b460f3c25aeae8e2b6483e548370c2
+step  6 '06 minter split': all 3 outputs seen after 2.5 s, as expected
+step  7 '07 mint from the split': submitting 2806c76782e7bfda79508fdc4f0c204d80abbeee8f89dd837ba8a5da69d035c4 (fee 0.30637600 KAS)
+step  7 '07 mint from the split': ACCEPTED 2806c76782e7bfda79508fdc4f0c204d80abbeee8f89dd837ba8a5da69d035c4
+step  7 '07 mint from the split': all 3 outputs seen after 4.7 s, as expected
+step  8 '08 reclaim into': submitting 3122ba0632f1a0e601915bdbab0c60c987071c419fd30b7d5b7d6ab11a079d14 (fee 0.15819200 KAS)
+step  8 '08 reclaim into': ACCEPTED 3122ba0632f1a0e601915bdbab0c60c987071c419fd30b7d5b7d6ab11a079d14
+step  8 '08 reclaim into': all 3 outputs seen after 6.0 s, as expected
+step  9 '09 mint': submitting 78e23990321b7decd966c14887b59806310b6faed043a3cbe44de2489c989da5 (fee 0.30547600 KAS)
+step  9 '09 mint': ACCEPTED 78e23990321b7decd966c14887b59806310b6faed043a3cbe44de2489c989da5
+step  9 '09 mint': all 3 outputs seen after 3.6 s, as expected
+step 10 '10 last mint': submitting da0e499e795454c2dbecea6a38ccbce336829c916315f95f25096a8e7a309961 (fee 0.30456800 KAS)
+step 10 '10 last mint': ACCEPTED da0e499e795454c2dbecea6a38ccbce336829c916315f95f25096a8e7a309961
+step 10 '10 last mint': all 3 outputs seen after 2.4 s, as expected
+step 11 '11 minter reclaim': submitting da5a7ffe0f388af7b4f56e2652aa2750784e46782df90a72abdef51ca4bde74e (fee 0.02336000 KAS)
+step 11 '11 minter reclaim': ACCEPTED da5a7ffe0f388af7b4f56e2652aa2750784e46782df90a72abdef51ca4bde74e
+step 11 '11 minter reclaim': all 2 outputs seen after 2.2 s, as expected
+step 12 '12 seed split': submitting e00b6f02fca077c329034dde626d4536089bdd3e1b86e6b492c3e5b55e97be65 (fee 0.30350800 KAS)
+step 12 '12 seed split': ACCEPTED e00b6f02fca077c329034dde626d4536089bdd3e1b86e6b492c3e5b55e97be65
+step 12 '12 seed split': all 3 outputs seen after 6.0 s, as expected
+step 13 '13 seed reclaim': submitting c5f46d16f2df63f1c86584de96942ae6ab9a0210880a4805d5040ed6fc72bcde (fee 0.14912400 KAS)
+step 13 '13 seed reclaim': ACCEPTED c5f46d16f2df63f1c86584de96942ae6ab9a0210880a4805d5040ed6fc72bcde
+step 13 '13 seed reclaim': all 3 outputs seen after 2.5 s, as expected
+steps   : 13 handed over and seen on chain, 0 found on chain already; 13 in all
+probe 1 "B1 transfer without the owner's signature": submitting d6fcdb55f0b88bc35ce204eb3857c7833b16d772bc722e02ef8f5cad5f2c5d5d, expecting a refusal
+probe 1 "B1 transfer without the owner's signature": REFUSED, by a script as far as the text tells
+reason  : RPC Server (remote error) -> Rejected transaction d6fcdb55f0b88bc35ce204eb3857c7833b16d772bc722e02ef8f5cad5f2c5d5d: failed to verify the signature script: script ran, but verification failed
+probe 2 'B2 more tokens out than in': submitting 7fe40b514e880a246bfd4e4f6b4de099e2759f01bdd23eb33c2e1297cfad6bdc, expecting a refusal
+probe 2 'B2 more tokens out than in': REFUSED, by a script as far as the text tells
+reason  : RPC Server (remote error) -> Rejected transaction 7fe40b514e880a246bfd4e4f6b4de099e2759f01bdd23eb33c2e1297cfad6bdc: failed to verify the signature script: script ran, but verification failed
+probe 3 'B3 the seed creates a coin that already holds tokens': submitting 911cab536d942c7d5e80d551eefe3fa580451c6967eb9a1853a406c43710918e, expecting a refusal
+probe 3 'B3 the seed creates a coin that already holds tokens': REFUSED, by a script as far as the text tells
+reason  : RPC Server (remote error) -> Rejected transaction 911cab536d942c7d5e80d551eefe3fa580451c6967eb9a1853a406c43710918e: failed to verify the signature script: script ran, but verification failed
+after  : issuer   962.01791316 KAS in 7 coin(s) at kaspatest:qr9qu3z2cfv03506hxwct55hz00acg0wynz2c733cnhy0t9v0d4kg8gzyrlea
+after  : bob      21.98118900 KAS in 3 coin(s) at kaspatest:qp947566r49dz85sryktf2e3eys783hp2u527u0fnyynnhn937jtk4rz3q9m9
+after  : alice    0.00000000 KAS in 0 coin(s) at kaspatest:qpqhsayjhjz8846pr3cxxc4gfnpdawhn3cvlht3xyyqt839u3xnzy3v7q4ckw
+finished: 13 steps on chain; 3 probes refused, 0 of them for another reason than a script
+exit=0
+ended 2026-10-11 12:29:19 UTC

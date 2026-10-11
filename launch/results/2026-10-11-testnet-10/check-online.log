@@ -1,0 +1,48 @@
+file    : chain.json, SHA-256 fb4c8dee62d86fc7e82a3696e188b1f1dc6881f9906ca6f4a86d8f880e841d99
+check a  format, network, limits, gates              : ok
+check b  parties and their addresses                 : ok
+check c  transaction ids rebuilt by the SDK          : ok
+check d  linkage of the coins                        : ok
+check e  fees                                        : ok
+check f  outputs go to the contracts and the parties : ok
+check g  covenant id                                 : ok - derived by the SDK from the first step, 2 output(s)
+check h  locks from states                           : ok - recomputed for 27 covenant outputs
+check i  summary
+  token name    : 0xlegacydag (a label; nothing on chain carries it)
+  covenant id   : 0d81e3e1d9f1c9568acd38e932f22eef1ea96dd6480d351e47cf61c692a4716a
+  funding coin  : 30.00000000 KAS of 'issuer', d61865b0a1fca270936bd33d34898abd3fafd993ab8cd21daf6014f93e248ace:0
+  steps         : 13, each expected to be accepted
+  probes        : 3, each expected to be refused
+  fees          : 3.38598000 KAS over the steps (cap of the file 15.00000000, feerate 400 sompi per gram)
+  left locked   : 7.00000000 KAS in covenant coins after the last step
+  left plain    : 2.00000000 KAS to 'bob' (deposits and change of this chain)
+  left plain    : 17.61402000 KAS to 'issuer' (deposits and change of this chain)
+  tokens        : alice 13
+  tokens        : bob 12
+  tokens, total : 25 (the file says 25 minted)
+  seeds         : 1
+    step  1  01 launch: the issuer's coin creates the minter (25 to mint, at most 10 per mint) and the seed [fee 0.32011200]
+    step  2  02 mint: the minter mints 10 tokens to Alice [fee 0.30896400]
+    step  3  03 transfer: Alice moves 4 tokens to Bob and keeps 6 (one coin in, two out) [fee 0.30844400]
+    step  4  04 seed create: the seed creates a zero-token coin for Bob, open to payments (threshold 0) [fee 0.30786800]
+    step  5  05 borrowed receive: Alice pays 3 tokens into Bob's open coin; Bob does not sign [fee 0.28288400]
+    step  6  06 minter split: the minter hands 5 of its 15 to a new minter owned by Bob [fee 0.30710400]
+    step  7  07 mint from the split: Bob's minter mints 2 tokens to Bob [fee 0.30637600]
+    step  8  08 reclaim into: Bob's minter (3 left) retires into the issuer's minter; Bob signs and gets the deposit [fee 0.15819200]
+    step  9  09 mint: the minter mints 10 tokens to Alice [fee 0.30547600]
+    step 10  10 last mint: the minter mints its last 3 tokens to Bob [fee 0.30456800]
+    step 11  11 minter reclaim: the issuer closes the empty minter and gets the deposit [fee 0.02336000]
+    step 12  12 seed split: the seed creates a second seed owned by Bob [fee 0.30350800]
+    step 13  13 seed reclaim: Bob's seed is closed next to the issuer's; Bob signs and gets the deposit [fee 0.14912400]
+    probe 1  B1 transfer without the owner's signature: Alice's 10 tokens are moved to Bob with a witness signed by Bob's key, not Alice's
+    probe 2  B2 more tokens out than in: Alice signs a transfer of her 3-token coin into 3 tokens for herself and 1 for Bob: 4 out of 3
+    probe 3  B3 the seed creates a coin that already holds tokens: the issuer's seed creates a token coin for Bob that holds 5 tokens nobody minted
+via     : wss://vector-10.kaspa.green/kaspa/testnet-10/wrpc/borsh, node version 2.1.0
+estimate: priority bucket {'feerate': 1211.406731595576, 'estimatedSeconds': 0.10000000000000014}
+estimate: normal buckets  [{'feerate': 196.08723728947183, 'estimatedSeconds': 23.42852519379536}, {'feerate': 140.94196246749777, 'estimatedSeconds': 63.090581708630616}]
+estimate: low buckets     [{'feerate': 115.33913592578848, 'estimatedSeconds': 115.12069491873395}]
+feerate : the file was built at 400 sompi per gram; the node's priority estimate now gives 1212
+feerate : NOTE - the node now asks for more than the file pays; a step may wait or be refused for its fee
+on chain: the funding coin is at its owner's address, unspent, with the stated value and script; no step is on chain
+built   : the first step ('01 launch') builds for sending from the node's own entry of the funding coin; not submitted
+check: passed (offline and online).

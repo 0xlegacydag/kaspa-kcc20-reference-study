@@ -1,0 +1,17 @@
+{
+  "format": "kcc20-launch-request/1",
+  "network": "testnet-10",
+  "read_at_utc": "2026-10-11T12:19:52Z",
+  "node": "wss://muon-10.kaspa.blue/kaspa/testnet-10/wrpc/borsh",
+  "token_name": "0xlegacydag",
+  "coin_value": 100000000,
+  "feerate": 400,
+  "fee_cap_total": 1500000000,
+  "funding": {
+    "transaction_id": "d61865b0a1fca270936bd33d34898abd3fafd993ab8cd21daf6014f93e248ace",
+    "index": 0,
+    "value": 3000000000,
+    "script_public_key_version": 0,
+    "script_public_key": "20ca0e444ac258f8d1fab99d85d29713dfdc21ee24c4ac7a31c4ee47acac7b6b64ac"
+  }
+}

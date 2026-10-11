@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+
+# files of a run: the request, the chain, the records
+request*.json
+chain*.json
+*.chain.json
+records/
+run-*.jsonl
+
+# the fixtures of the tests are kept
+!tests/*.json
+
+# the files of a run that was made are kept
+!results/**

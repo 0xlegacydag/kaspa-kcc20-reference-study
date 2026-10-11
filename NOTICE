@@ -1,0 +1,59 @@
+This repository is an independent study. It is not affiliated with or
+endorsed by the authors of the KCC-20 specification, the authors of the KCC20
+reference, or the Kaspa developers.
+
+It holds no source file of the KCC20 reference and no file copied from its
+repository. What in it comes from the work of others:
+
+1. Compiled contract scripts inside the recorded transactions.
+
+   A Kaspa transaction that spends a coin of a contract reveals the
+   contract's script. Of the 16 transactions kept in
+
+     launch/results/2026-10-11-testnet-10/chain.json
+
+   the 15 that spend a coin of a contract (all but the launch) therefore
+   carry, in their signature scripts, compiled scripts of the contracts
+   KCC20, PublicMint and TokenSeed of the KCC20 reference,
+   https://github.com/argent-lang/kcc20-reference, revision c8a0871. They are
+   the three compiled scripts whole: after the state fields of each coin,
+   byte for byte the bytecode in that repository's
+   fixtures/public-mint/artifact.json. The 13 accepted transactions were
+   accepted by Kaspa testnet-10 nodes on 2026-10-11 and were public there;
+   between them they reveal all three scripts. The 3 refused transactions
+   kept beside them carry two of the three, KCC20 and TokenSeed. No other
+   file of this repository carries them.
+
+   The contracts are the work of the contributors of that repository, named
+   in its commit history. They are written in Argent
+   (https://github.com/argent-lang/argent) and compiled through SilverScript
+   (https://github.com/kaspanet/silverscript), both under the ISC License.
+   The reference states its license in its Cargo.toml (`license = "ISC"`,
+   revision c8a0871) and carries no separate license file or copyright
+   line, so no copyright line is reproduced here. The compiled scripts are
+   reproduced on that declaration. They are not covered by the LICENSE of
+   this repository. The permission notice of the ISC License reads:
+
+   Permission to use, copy, modify, and/or distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
+
+   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+   WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+   ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+2. The Kaspa Python SDK, package `kaspa`,
+   https://github.com/kaspanet/kaspa-python-sdk, is a dependency installed
+   from PyPI. It is not included here. It is distributed under the ISC
+   License, Copyright (c) 2022-2026 Kaspa developers. The calls by which the
+   sender and the fixture script build transaction objects follow the SDK's
+   documented usage.
+
+Everything else - the sender, its tests, the description of the file formats
+and the record of the run - was written for this study, in part reusing the
+author's earlier repository kaspa-covenant-starter-lab, and is under the
+license in the file LICENSE.

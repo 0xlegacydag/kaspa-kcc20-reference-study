@@ -1,0 +1,11 @@
+# local environment
+.venv/
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+
+# key files and local settings never belong in the repository
+.env
+*.key
+tn10-*

@@ -1,0 +1,7 @@
+via     : wss://muon-10.kaspa.blue/kaspa/testnet-10/wrpc/borsh, node version 2.1.0
+estimate: priority bucket {'feerate': 1337.4612654147545, 'estimatedSeconds': 0.1000000000000001}
+estimate: normal buckets  [{'feerate': 196.43188985620114, 'estimatedSeconds': 31.37625336304479}, {'feerate': 141.02770978911238, 'estimatedSeconds': 84.78489258590488}]
+estimate: low buckets     [{'feerate': 115.36261798231943, 'estimatedSeconds': 154.8941917680969}]
+feerate : 400 sompi per gram (given on the command line)
+funding : 30.00000000 KAS, d61865b0a1fca270936bd33d34898abd3fafd993ab8cd21daf6014f93e248ace:0
+written : results\2026-10-11-testnet-10\request.json
