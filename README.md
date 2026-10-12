@@ -1,5 +1,7 @@
 # A study of the KCC20 reference contracts on Kaspa
 
+[![checks](https://github.com/0xlegacydag/kaspa-kcc20-reference-study/actions/workflows/checks.yml/badge.svg?branch=main&event=push)](https://github.com/0xlegacydag/kaspa-kcc20-reference-study/actions/workflows/checks.yml)
+
 One launch of a test token made from the published KCC20 reference contracts on a Kaspa
 test network, recorded step by step, with the two programs behind it: the one that built,
 signed and judged the transactions offline, and the one that sent them. With the builder
@@ -175,7 +177,20 @@ These commands were run from a fresh copy of the repository on 2026-10-11, on Wi
 `python` in the first line was CPython 3.12.14, called by its full path; any CPython from
 3.10 to 3.14 that the `kaspa` package supports should do. On Linux or macOS use
 `.venv/bin/python` and forward slashes; with forward slashes the three commands after the
-install were also run in Git Bash on Windows, not on another system.
+install were also run in Git Bash on Windows.
+
+The install, the tests, `check` and a comparison of the two checksums are also run by the
+workflow [`.github/workflows/checks.yml`](.github/workflows/checks.yml) on pushes to `main`,
+on pull requests and when started by hand, on machines hosted by GitHub: `ubuntu-24.04`
+(x64), `macos-26` (arm64) and `windows-2025` (x64), in bash, with a CPython 3.12 set up by
+`actions/setup-python` and without a virtual environment. `status` is not run there: it asks
+a public node. The same workflow runs cargo commands in `engine/` there, listed under
+"Running" in [`engine/README.md`](engine/README.md). A green mark beside a commit of `main`
+says that all these commands passed on those machines for that commit; for a pull request
+they are run on its merge with the base branch. A red mark can also have its cause outside
+this repository: every run downloads the `kaspa` package, the Rust toolchain, the
+dependencies of `engine/` and the reference again. GitHub keeps the marks and their logs
+for a limited time.
 
 **The chain file, by a node's rules, offline.** `engine/` holds a test that reads a
 finished chain file and puts every transaction of it to the rules of `node-gate` again,
@@ -198,7 +213,7 @@ In a Unix shell, from `engine/`:
 REVIEW_CHAIN_FILES=$(realpath ../launch/results/2026-10-11-testnet-10/chain.json) cargo test --frozen -p checks --test review_launch_real -- --nocapture
 ```
 
-That form was run in Git Bash on Windows, not on Linux or macOS.
+That form was run in Git Bash on Windows; the workflow runs it on the hosted machines too.
 
 For the chain of the run it prints a line that starts with the path of the file and goes
 on:
@@ -216,7 +231,9 @@ self-test has written its two chain files. Look for that count: with no file fou
 test passes as well and prints `0 chain files replayed`. The replay was
 run on 2026-10-12 on Windows 11, each time in a copy of the repository: first with the
 dependencies already in cargo's cache, then after `cargo fetch --locked` into an empty
-cargo home. It was not run on another system.
+cargo home. In the workflow the replay comes after the full `cargo test`, so the count
+there is 3. In the output the workflow looks for the line shown above, up to
+`fees 338598000`, and for a count above zero.
 
 No block-explorer links are given. On the day of the run the two public testnet-10
 explorers that were tried did not know the launch transaction, while nodes listed its

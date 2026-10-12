@@ -1,0 +1,147 @@
+# Runs the checks of this repository on machines hosted by GitHub.
+# What each command is and what it shows: README.md, "Check it yourself",
+# and engine/README.md, "Running".
+#
+# A green mark says that these commands passed on these machines. Not run
+# here: `status` (it asks a public node), the builder with real keys, and the
+# mutation run of engine/tools/mutation-run.mjs.
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  launch:
+    name: launch (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-26, windows-2025]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install the pinned Kaspa SDK
+        run: |
+          python --version
+          python -m pip --version
+          python -m pip install --require-hashes -r requirements.txt
+
+      - name: Tests of the sender
+        working-directory: launch
+        run: python -m unittest discover -s tests
+
+      - name: The chain file of the run, by the sender's rules
+        working-directory: launch
+        run: >
+          python launch_send.py check results/2026-10-11-testnet-10/chain.json
+          --party issuer=kaspatest:qr9qu3z2cfv03506hxwct55hz00acg0wynz2c733cnhy0t9v0d4kg8gzyrlea
+          --party bob=kaspatest:qp947566r49dz85sryktf2e3eys783hp2u527u0fnyynnhn937jtk4rz3q9m9
+          --party alice=kaspatest:qpqhsayjhjz8846pr3cxxc4gfnpdawhn3cvlht3xyyqt839u3xnzy3v7q4ckw
+
+      - name: The two checksums the record of the run names
+        working-directory: launch
+        run: |
+          python - <<'EOF'
+          import glob, hashlib, json, sys
+          run = "results/2026-10-11-testnet-10"
+          (record,) = glob.glob(run + "/records/run-*.jsonl")
+          with open(record, encoding="utf-8") as lines:
+              first = json.loads(lines.readline())
+          bad = 0
+          for want, name in (
+              (first["chain_sha256"], run + "/chain.json"),
+              (first["program_sha256"], "launch_send.py"),
+          ):
+              with open(name, "rb") as file:
+                  have = hashlib.sha256(file.read()).hexdigest()
+              print(name, have, "ok" if have == want else "DIFFERENT, the record names " + want)
+              bad += have != want
+          sys.exit(1 if bad else 0)
+          EOF
+
+  engine:
+    name: engine (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-26, windows-2025]
+    defaults:
+      run:
+        shell: bash
+        working-directory: engine
+    env:
+      # The build leaves out debug information and incremental data, to take less
+      # room on the disk of a hosted machine. No command and no test depends on either.
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Clone the reference at the revision the checks were written against
+        working-directory: .
+        run: |
+          git clone -c core.autocrlf=false https://github.com/argent-lang/kcc20-reference
+          git -C kcc20-reference checkout c8a087117735a1f87c5c6d115fcddeaf2562c784
+
+      - name: The Rust toolchain that rust-toolchain.toml names
+        run: |
+          rustup --version
+          rustup toolchain install --no-self-update
+          rustc --version --verbose
+          cargo --version
+          cargo clippy --version
+          cargo fmt --version
+          df -h .
+
+      - name: cargo fetch --locked
+        run: cargo fetch --locked
+
+      - name: cargo fmt --all --check
+        run: cargo fmt --all --check
+
+      - name: cargo clippy
+        run: cargo clippy --frozen --workspace --all-targets -- -D warnings
+
+      - name: cargo test
+        run: cargo test --frozen --workspace
+
+      - name: The signature checks by themselves
+        run: cargo test --frozen -p checks --test engine_signatures
+
+      # The log of this step shows a line that starts with secretkey(#: the debug
+      # form of a made-up key, a short tag and not a key (README.md).
+      - name: The chain file of the run, by a node's rules
+        run: |
+          REVIEW_CHAIN_FILES=$(realpath ../launch/results/2026-10-11-testnet-10/chain.json) \
+            cargo test --frozen -p checks --test review_launch_real -- --nocapture 2>&1 | tee replay.log
+          grep -F "13 steps accepted, 3 probes refused at input 0; fees 338598000" replay.log
+          grep -E "[1-9][0-9]* chain files replayed" replay.log
+          rm replay.log
+
+      - name: Room taken by the build
+        if: always()
+        run: |
+          du -sh target || true
+          df -h .

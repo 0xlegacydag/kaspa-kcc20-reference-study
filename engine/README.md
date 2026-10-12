@@ -32,8 +32,9 @@ On the pages of `launch/` "the harness" is another thing: the unpublished tool
 
 ## What you need
 
-- **Rust**, through rustup: `rust-toolchain.toml` pins 1.94.1 and rustup fetches it on the
-  first `cargo` call.
+- **Rust**, through rustup: `rust-toolchain.toml` pins 1.94.1. `rustup toolchain install`
+  with no toolchain named, run in `engine/`, fetches it (rustup 1.28 or newer); by default
+  rustup also fetches it by itself at the first command that needs it.
 - **A C compiler and an assembler.** Three dependencies compile native code (secp256k1,
   Keccak, BLAKE3). On Windows: the Microsoft C++ Build Tools with a Windows SDK. On Linux
   or macOS: a `cc`.
@@ -92,7 +93,6 @@ fetch; a `cargo search` then failed to reach crates.io, and nothing more was dow
 Both times the build and the tests gave the same 762 passes in 50 test programs. After
 the second run `engine/target` held more than 9 GB. The Rust toolchain and the Microsoft
 build tools were already installed, and the commands were run by a script in Git Bash.
-Nothing was run on another system.
 
 `cargo fmt --all --check` and
 `cargo clippy --frozen --workspace --all-targets -- -D warnings` were run on the same day
@@ -100,6 +100,17 @@ and system: the first reported no difference, the second no remark. Eight functi
 carry an `#[allow]` for one clippy lint each: four for the number of their arguments,
 and four in `crates/node-gate/src/policy.rs` that keep a loop or a nested `if` as
 rusty-kaspa writes it.
+
+The workflow [`../.github/workflows/checks.yml`](../.github/workflows/checks.yml) runs
+`cargo fetch --locked`, `cargo fmt --all --check`, the clippy command above, the two test
+commands and the replay of the run's chain file on pushes to `main`, on pull requests and
+when started by hand, on machines hosted by GitHub: `ubuntu-24.04` (x64), `macos-26` (arm64)
+and `windows-2025` (x64). Each time the machine is new: the workflow fetches the toolchain
+with rustup, makes a new clone of the reference, leaves the network on,
+and builds without debug information and incremental data (`CARGO_PROFILE_DEV_DEBUG=0`,
+`CARGO_INCREMENTAL=0`) to take less room on the machine's disk. The counts of tests, the
+times, the sizes and the two fetches into an empty cargo home above are from the Windows 11
+laptop only.
 
 Result lines go to `target/check-results/<test file>.jsonl`. Some tests also write
 documents there: `measure.json`, `limits.json`, `signature-matrix.json`, the launch
@@ -217,7 +228,9 @@ ordinary one.
 - An audit. Nothing here is a statement about the safety of the reference, and a passing
   run is not one either.
 
-It was run on Windows 11 only.
+The mutation run was made on Windows 11 only. The tests are also run on machines hosted by
+GitHub (see "Running"), the builder only as its self-test. A green mark there says that
+they passed on those machines; like any passing run, it shows none of the things listed above.
 
 ## Licences
 
