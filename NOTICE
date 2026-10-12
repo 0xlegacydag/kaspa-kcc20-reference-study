@@ -2,8 +2,9 @@ This repository is an independent study. It is not affiliated with or
 endorsed by the authors of the KCC-20 specification, the authors of the KCC20
 reference, or the Kaspa developers.
 
-It holds no source file of the KCC20 reference and no file copied from its
-repository. What in it comes from the work of others:
+It holds no source file of the KCC20 reference, no file copied from its
+repository and no line of the source text of its contracts. What in it
+comes from the work of others:
 
 1. Compiled contract scripts inside the recorded transactions.
 
@@ -53,7 +54,113 @@ repository. What in it comes from the work of others:
    sender and the fixture script build transaction objects follow the SDK's
    documented usage.
 
-Everything else - the sender, its tests, the description of the file formats
-and the record of the run - was written for this study, in part reusing the
-author's earlier repository kaspa-covenant-starter-lab, and is under the
-license in the file LICENSE.
+3. Rules of a Kaspa node, ported, in engine/.
+
+   The crate engine/crates/node-gate answers what a node would say about a
+   transaction without running a node. The script engine and the mass
+   calculator are the node's own packages, used as dependencies (see 5).
+   The rules around them are ported, with changes, from rusty-kaspa,
+   https://github.com/kaspanet/rusty-kaspa, revision
+   a41a333b08848f41bf737b72592e463a6011b8ac, into these files:
+
+     engine/crates/node-gate/src/isolation.rs
+     engine/crates/node-gate/src/header.rs
+     engine/crates/node-gate/src/utxo.rs
+     engine/crates/node-gate/src/block.rs
+     engine/crates/node-gate/src/policy.rs
+     engine/crates/node-gate/src/mass.rs (two functions)
+
+   One function of engine/crates/node-gate/src/engine.rs, parse, evaluates
+   again the checks the engine makes on an opcode before it runs it
+   (crypto/txscript/src/lib.rs, lines 622-629 and 656-669), with
+   upstream's conditions and errors; the order of the steps in gate.rs
+   follows the node's.
+
+   Each ported function names its upstream file and lines and, except in
+   policy.rs, keeps its upstream name; in policy.rs the four upstream
+   functions are split into one function per rule under names of this
+   crate, and the four composing functions keep theirs;
+   engine/crates/node-gate/README.md lists them. The texts
+   of the refusals in policy.rs and block.rs are upstream's, word for word;
+   the prefix "non-standard: " in front of some of them is this crate's.
+   Three test files replay rusty-kaspa's own unit tests against these
+   ports, with upstream's transactions, byte vectors and expected results:
+
+     engine/crates/checks/tests/review_consensus_isolation.rs
+     engine/crates/checks/tests/review_consensus_utxo.rs
+     engine/crates/checks/tests/review_policy_upstream_vectors.rs
+
+   Among upstream's test vectors are two transactions that its test file
+   says are taken from existing transactions, naming their ids. They are
+   run here as upstream runs them, under mainnet parameters, and are only
+   read, offline, as the input of a check: nothing in this repository was
+   ever sent to mainnet. The formatter settings in
+   engine/crates/node-gate/rustfmt.toml follow rusty-kaspa's as well.
+
+   These parts remain under the license of rusty-kaspa, which reads:
+
+   ISC License
+
+   Copyright (c) 2022-2024 Kaspa developers
+
+   Permission to use, copy, modify, and distribute this software for any
+   purpose with or without fee is hereby granted, provided that the above
+   copyright notice and this permission notice appear in all copies.
+
+   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+   WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+   MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+   ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+4. What in engine/ follows the KCC20 reference without being copied from
+   it.
+
+   The checks read the reference - its compiled artifact and the two
+   descriptions beside it (manifest.json, kcc20.json), its generated
+   SilverScript and its conformance vectors - from a clone the reader
+   makes; none of these files is included. The file
+   engine/data/rule-inventory.json gives, for every refusing opcode of the
+   three compiled contracts, its byte offset, its opcode name and the line
+   numbers of the reference's sources it comes from, with a description in
+   this study's own words; it reproduces no source text and no bytecode.
+   The scenarios of the honest transactions in
+   engine/crates/kcc20-family/src/shapes.rs and their values (amounts,
+   coin values, key seeds, the covenant id of the script-only profile)
+   follow the reference's tests and examples; the code is written anew.
+   The names and values of the scheme constants and of the state fields in
+   engine/crates/kcc20-family/src/states.rs are those of the reference and
+   of the KCC-20 specification, and a few short helpers there and in
+   shapes.rs, witness.rs and keys.rs do what the reference's tests and
+   examples do. The cases built from the conformance vectors in
+   engine/crates/checks/tests/port_transfer.rs and review_ports_token.rs
+   are put together as the reference's own conformance test puts them
+   together; the code is written anew. A few digests and test values are
+   written out in tests: the id, the sizes, the template hashes, the
+   dispatch tags and the function signatures of the reference's artifact,
+   a digest of its conformance vectors, two template hashes that
+   SilverScript's own tests use, and values of the test vectors of the KCC
+   specifications, https://github.com/kaspanet/kccs (CC0).
+
+5. Rust dependencies of engine/, fetched by cargo and not included here:
+   12 packages of rusty-kaspa at revision a41a333 (ISC License, Copyright
+   (c) 2022-2024 Kaspa developers); 4 packages of Argent,
+   https://github.com/argent-lang/argent, at revision 9a9f4b1 (ISC License,
+   Copyright 2026 Argent-lang developers); 2 packages of SilverScript,
+   https://github.com/kaspanet/silverscript, at revision 3ed9733 (ISC
+   License, Copyright 2026 Kaspa Developers); and packages from crates.io
+   under their own licenses. Every version is pinned by engine/Cargo.lock.
+   The assembly of calls and coins in engine/crates/kcc20-family follows
+   what Argent's runtime does and cites its lines; one function,
+   Family::hidden_args, has the loop and the match arms of Argent's
+   resolve_hidden_args_in_artifact.
+
+Everything else - the sender and its tests, the description of the file
+formats, the record of the run, and in engine/ the crate kcc20-family
+apart from what 4 and 5 say of it, the crate checks except the three test
+files named in 3, the parts of node-gate that are not ported, the rule
+inventory and the mutation tool - was written for this study, in part
+reusing the author's earlier repository kaspa-covenant-starter-lab, and is
+under the license in the file LICENSE.

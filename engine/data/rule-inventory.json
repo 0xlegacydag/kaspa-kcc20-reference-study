@@ -1,0 +1,3883 @@
+{
+ "meta": {
+  "title": "Rule inventory of KCC20, PublicMint and TokenSeed",
+  "written": "2026-10-11",
+  "sources": {
+   "argent_sources": "kcc20-reference/contracts/{kcc20,public_mint,token_seed}.ag (196, 113, 61 lines)",
+   "sil": "kcc20-reference/fixtures/public-mint/sil/{KCC20,PublicMint,TokenSeed}.sil (270, 327, 257 lines)",
+   "bytecode": "kcc20-reference/fixtures/public-mint/artifact.json, sil_abi.contracts.<X>.compiled.bytecode",
+   "kcc20_reference_revision": "c8a087117735a1f87c5c6d115fcddeaf2562c784",
+   "silverscript_revision": "3ed973335b59269293564805cc2c58a14595ec03 (compiler source read for the generated checks)",
+   "rusty_kaspa_revision": "a41a333b08848f41bf737b72592e463a6011b8ac (engine source read for opcode behaviour)"
+  },
+  "bytecode": {
+   "KCC20": {
+    "bytes": 4031,
+    "opcodes": 3299,
+    "state_span": {
+     "offset": 1,
+     "len": 145
+    }
+   },
+   "PublicMint": {
+    "bytes": 2019,
+    "opcodes": 1612,
+    "state_span": {
+     "offset": 1,
+     "len": 150
+    }
+   },
+   "TokenSeed": {
+    "bytes": 1355,
+    "opcodes": 1049,
+    "state_span": {
+     "offset": 1,
+     "len": 132
+    }
+   }
+  },
+  "counts": {
+   "rules": 173,
+   "KCC20": 73,
+   "PublicMint": 57,
+   "TokenSeed": 43
+  },
+  "coverage": {
+   "KCC20": {
+    "verify_like_opcodes": 100,
+    "by_opcode": {
+     "OpNumEqualVerify": 13,
+     "OpVerify": 77,
+     "OpEqualVerify": 9,
+     "OpReturn": 1
+    },
+    "all_mapped_to_a_rule": true
+   },
+   "PublicMint": {
+    "verify_like_opcodes": 54,
+    "by_opcode": {
+     "OpVerify": 33,
+     "OpNumEqualVerify": 10,
+     "OpEqualVerify": 10,
+     "OpReturn": 1
+    },
+    "all_mapped_to_a_rule": true
+   },
+   "TokenSeed": {
+    "verify_like_opcodes": 41,
+    "by_opcode": {
+     "OpVerify": 24,
+     "OpNumEqualVerify": 9,
+     "OpEqualVerify": 7,
+     "OpReturn": 1
+    },
+    "all_mapped_to_a_rule": true
+   }
+  },
+  "field_legend": {
+   "rule_id": "K-nn KCC20, M-nn PublicMint, S-nn TokenSeed, numbered in execution (bytecode) order per entry.",
+   "origin": "source = written in the .ag file; argent = added by argentc (visible in .sil); silverc = added by the SilverScript compiler (not visible in .sil); argent+silverc = a builtin call written by argentc and expanded by silverc; engine = the refusal is the engine's own, in an arithmetic opcode of the script",
+   "sil_line": "line(s) of the pinned .sil; \"a -> b\" = call site -> line inside the helper function",
+   "bytecode_at": "byte offset(s), inside the redeem script, of the opcode that refuses (OpVerify / OpEqualVerify / OpNumEqualVerify / OpReturn; for origin engine the arithmetic opcode). Several values = loop copies or branches. Offsets are the same in every materialized script.",
+   "op_index": "0-based ordinal of that opcode in the linear disassembly of the redeem script. The engine log (with_opcode_execution_log_buffer) writes one line per PARSED opcode, skipped branches included (crypto/txscript/src/lib.rs:612-613, 656-671), so: op_index = (log lines) - (pushes of the signature script) - 3 - 1 when the last line is the failing opcode.",
+   "only_via_call_bytes": "true = with honest coins, outputs and bindings the rule is decided by the active input's signature script alone",
+   "needs_raw_bytes": "true = only hand-built signature-script bytes reach it; typed call arguments cannot"
+  },
+  "method": "The .ag and .sil files of the pinned reference were read in full. Line numbers are those of these files. Byte offsets and op_index come from a linear disassembly of the pinned bytecode with the opcode table of rusty-kaspa (crypto/txscript/src/opcodes/mod.rs). No source text of the reference is reproduced in this file. Nothing in this file is a result of running an engine."
+ },
+ "engine_preconditions": [
+  {
+   "id": "E-01",
+   "rule": "The coin's script public key must have version 0. A higher version is ACCEPTED without running any script.",
+   "source": "rusty-kaspa a41a333 crypto/txscript/src/lib.rs:695-698",
+   "refusal": "none (acceptance)",
+   "note": ""
+  },
+  {
+   "id": "E-02",
+   "rule": "The signature script may contain push opcodes only (opcode value <= 0x60).",
+   "source": "rusty-kaspa a41a333 crypto/txscript/src/lib.rs:656-671",
+   "refusal": "SignatureScriptNotPushOnly",
+   "note": "Checked opcode by opcode while the signature script runs."
+  },
+  {
+   "id": "E-03",
+   "rule": "P2SH check of the coin's own script: the LAST item pushed by the signature script must hash (BLAKE2b-256, unkeyed) to the 32 bytes in the coin's script aa 20 <32> 87. Only then is the stack left by the signature script restored, its top item popped and run as the redeem script.",
+   "source": "rusty-kaspa a41a333 crypto/txscript/src/lib.rs:733-750, 773-787",
+   "refusal": "EvalFalse (from check_error_condition(false) at lib.rs:746)",
+   "note": ""
+  },
+  {
+   "id": "E-04",
+   "rule": "After the redeem script exactly one item may remain and it must be true.",
+   "source": "rusty-kaspa a41a333 crypto/txscript/src/lib.rs:754-759, 773-787",
+   "refusal": "CleanStack(n) for n extra items; EmptyStack; EvalFalse",
+   "note": ""
+  },
+  {
+   "id": "E-05",
+   "rule": "OpPick reads an item by its depth and is refused at a depth the stack does not have.",
+   "source": "rusty-kaspa a41a333 crypto/txscript/src/opcodes/mod.rs:560-566",
+   "refusal": "InvalidState(\"pick at an invalid location\")",
+   "note": ""
+  },
+  {
+   "id": "E-06",
+   "rule": "Data stack plus alt stack hold at most 244 items.",
+   "source": "rusty-kaspa a41a333 crypto/txscript/src/lib.rs:76, 673-676",
+   "refusal": "StackSizeExceeded(n, 244)",
+   "note": ""
+  },
+  {
+   "id": "E-07",
+   "rule": "Script units: one signature check costs the sig-op price and is charged BEFORE key and signature are parsed; an EMPTY signature is not charged (the opcode returns false first).",
+   "source": "rusty-kaspa a41a333 crypto/txscript/src/lib.rs:894-898, 923-927; rusty-kaspa a41a333 crypto/txscript/src/opcodes/mod.rs:944-988",
+   "refusal": "ExceededCommittedScriptUnits",
+   "note": "The signature rules of the contracts are listed in lists.signature_checks."
+  },
+  {
+   "id": "E-08",
+   "rule": "With covenants enabled the engine demands neither minimal pushes nor minimal numbers: 00, 01 00, 01 80 and 08 00..00 are all the number zero; 4c 04 <tag> is the tag.",
+   "source": "rusty-kaspa a41a333 crypto/txscript/src/lib.rs:627-629; rusty-kaspa a41a333 crypto/txscript/src/data_stack.rs:190-208, 351-365",
+   "refusal": "none",
+   "note": "Several byte strings are the same call. A number longer than 8 bytes is NumberTooBig (data_stack.rs:239-251)."
+  },
+  {
+   "id": "E-09",
+   "rule": "The signature hash covers no signature script and (transaction version >= 1) no compute commitment. Under type ALL it covers every output: value, script and covenant binding.",
+   "source": "rusty-kaspa a41a333 consensus/core/src/hashing/sighash.rs:228-238, 245-280",
+   "refusal": "none",
+   "note": ""
+  }
+ ],
+ "rules": [
+  {
+   "rule_id": "K-01",
+   "contract": "KCC20",
+   "entry": "dispatcher (both entries)",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    4028
+   ],
+   "op_index": [
+    3296
+   ],
+   "check_opcode": "OpReturn",
+   "also_reached_from": [],
+   "meaning": "The last item pushed before the redeem script must be exactly the 4 bytes 79c71c23 (transfer) or fd3ef14a (transfer_delegator). Anything else reaches OpReturn.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-02",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    162
+   ],
+   "op_index": [
+    20
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Length of the witness is a multiple of 1.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-03",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    171
+   ],
+   "op_index": [
+    29
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Byte length of the first argument (the column of all declared amounts) is a multiple of 8.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-04",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    185
+   ],
+   "op_index": [
+    42
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Byte length of the owners column is a multiple of 32.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-05",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    191
+   ],
+   "op_index": [
+    47
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The owners column holds as many elements as the amounts column.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-06",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    200
+   ],
+   "op_index": [
+    56
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Length of the owner_schemes column is a multiple of 1.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-07",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    203
+   ],
+   "op_index": [
+    59
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The owner_schemes column holds n bytes (one per declared amount).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-08",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    212
+   ],
+   "op_index": [
+    68
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Length of the borrow_schemes column is a multiple of 1.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-09",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    215
+   ],
+   "op_index": [
+    71
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The borrow_schemes column holds n bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-10",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    225
+   ],
+   "op_index": [
+    80
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Byte length of the borrow_guards column is a multiple of 32.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-11",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    231
+   ],
+   "op_index": [
+    85
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The borrow_guards column holds n elements.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-12",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    241
+   ],
+   "op_index": [
+    94
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Byte length of the extension_commitments column is a multiple of 32.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-13",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    247
+   ],
+   "op_index": [
+    99
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The extension_commitments column holds n elements.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "K-14",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "129",
+   "ag_line": "generated (leader position; consumes clause kcc20.ag:93-95)",
+   "bytecode_at": [
+    266
+   ],
+   "op_index": [
+    110
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The input that runs transfer must be the first input (lowest input index) among all inputs carrying this coin's covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-15",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "131",
+   "ag_line": "generated",
+   "bytecode_at": [
+    274
+   ],
+   "op_index": [
+    118
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The number of delegates (the family inputs minus one) is not negative.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-16",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "132",
+   "ag_line": "generated (upper bound: the constant MAX_DELEGATES, 2; kcc20.ag:17, 94)",
+   "bytecode_at": [
+    278
+   ],
+   "op_index": [
+    122
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "At most two delegates: at most three inputs of the family in one transaction.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-17",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": "134",
+   "ag_line": "generated",
+   "bytecode_at": [
+    295
+   ],
+   "op_index": [
+    139
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Guard the compiler adds to the for loop at KCC20.sil:134: the number of delegates is at most 2.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-18",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "136-141",
+   "ag_line": "generated (typed read of each delegate)",
+   "bytecode_at": [
+    370,
+    1027
+   ],
+   "op_index": [
+    197,
+    717
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "For each delegate (family input at position 1, then 2): the last 4031 bytes of that input's signature script, hashed with BLAKE2b and wrapped as 0000 aa 20 <hash> 87, must equal that input's script public key.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-19",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "136-141",
+   "ag_line": "generated",
+   "bytecode_at": [
+    476,
+    1133
+   ],
+   "op_index": [
+    278,
+    798
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "BLAKE3 over le8(1) || first byte || le8(3885) || last 3885 bytes of that 4031-byte slice must equal the gen__kcc20_template field of the leader's own state.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-20",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "136-150",
+   "ag_line": "generated",
+   "bytecode_at": [],
+   "op_index": [],
+   "check_opcode": null,
+   "also_reached_from": [],
+   "meaning": "Decode step.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false,
+   "bytecode_range": [
+    {
+     "from": 477,
+     "to": 952
+    },
+    {
+     "from": 1134,
+     "to": 1609
+    }
+   ]
+  },
+  {
+   "rule_id": "K-21",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "155",
+   "ag_line": "generated (emits clause kcc20.ag:95-97, lower bound 1)",
+   "bytecode_at": [
+    1615
+   ],
+   "op_index": [
+    1185
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "At least one output is bound to the leader (authorizing_input = leader index, same covenant id).",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-22",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "156",
+   "ag_line": "generated (upper bound: the constant MAX_TOKEN_OUTPUTS, 3; kcc20.ag:18, 96)",
+   "bytecode_at": [
+    1619
+   ],
+   "op_index": [
+    1189
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "At most three outputs are bound to the leader.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-23",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "158",
+   "ag_line": "generated (continuation closure, rule 5 of Argent's input group rules)",
+   "bytecode_at": [
+    1626
+   ],
+   "op_index": [
+    1196
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The number of ALL continuation outputs of this covenant id equals the number bound to the leader: no other family input may authorize a family output.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-24",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "160",
+   "ag_line": "kcc20.ag:98",
+   "bytecode_at": [
+    1637
+   ],
+   "op_index": [
+    1206
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The number of declared states (length of the amounts column / 8) equals the number of outputs bound to the leader.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-25",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "161",
+   "ag_line": "kcc20.ag:99",
+   "bytecode_at": [
+    1648
+   ],
+   "op_index": [
+    1216
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The witness has at least one byte (the path selector).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-26",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": "163",
+   "ag_line": "generated",
+   "bytecode_at": [
+    1662
+   ],
+   "op_index": [
+    1229
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Guard the compiler adds to the for loop at KCC20.sil:163: the number of delegates is at most 2.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-27",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "104",
+   "ag_line": "generated (range helper gen__checked_range_index, called at KCC20.sil:164 and 165)",
+   "bytecode_at": [
+    1675,
+    1705,
+    1764,
+    1794
+   ],
+   "op_index": [
+    1242,
+    1268,
+    1326,
+    1352
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The index is not negative when a delegate is picked from the list.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-28",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "105",
+   "ag_line": "generated (same helper)",
+   "bytecode_at": [
+    1679,
+    1709,
+    1768,
+    1798
+   ],
+   "op_index": [
+    1246,
+    1272,
+    1330,
+    1356
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The index is below the number of delegates when a delegate is picked from the list.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-29",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "164",
+   "ag_line": "kcc20.ag:106",
+   "bytecode_at": [
+    1696,
+    1785
+   ],
+   "op_index": [
+    1260,
+    1344
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Each delegate's extension_commitment equals the leader's.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-30",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "engine",
+   "sil_line": "165",
+   "ag_line": "kcc20.ag:107",
+   "bytecode_at": [
+    1724,
+    1813
+   ],
+   "op_index": [
+    1286,
+    1370
+   ],
+   "check_opcode": "OpAdd",
+   "also_reached_from": [],
+   "meaning": "The leader's amount plus the delegates' amounts must stay inside +-(2^63 - 1): checked 64-bit addition in the engine.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-31",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": "168",
+   "ag_line": "generated",
+   "bytecode_at": [
+    1858
+   ],
+   "op_index": [
+    1414
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Guard the compiler adds to the for loop at KCC20.sil:168: the number of declared states is at most 3.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-32",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "169",
+   "ag_line": "kcc20.ag:113",
+   "bytecode_at": [
+    1877,
+    1990,
+    2103
+   ],
+   "op_index": [
+    1432,
+    1531,
+    1630
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Every declared amount is not negative (numeric test on the 8 bytes of the column element).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-33",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_valid_owner_scheme (KCC20.sil:57-59; called once per declared state from transfer, line 170)",
+   "origin": "source",
+   "sil_line": "170 -> 58",
+   "ag_line": "kcc20.ag:114 -> kcc20.ag:29",
+   "bytecode_at": [
+    1898,
+    2011,
+    2124
+   ],
+   "op_index": [
+    1449,
+    1548,
+    1647
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "owner_scheme of every declared state, read as an unsigned byte (byte || 00), is <= 4.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-34",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_valid_borrow_scheme (KCC20.sil:60-62; called once per declared state from transfer, line 171)",
+   "origin": "source",
+   "sil_line": "171 -> 61",
+   "ag_line": "kcc20.ag:115 -> kcc20.ag:33",
+   "bytecode_at": [
+    1920,
+    2033,
+    2146
+   ],
+   "op_index": [
+    1467,
+    1566,
+    1665
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "borrow_scheme of every declared state, read as an unsigned byte, is <= 3.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-35",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "172",
+   "ag_line": "kcc20.ag:116",
+   "bytecode_at": [
+    1938,
+    2051,
+    2164
+   ],
+   "op_index": [
+    1481,
+    1580,
+    1679
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "extension_commitment of every declared state equals the leader's.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-36",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "engine",
+   "sil_line": "173",
+   "ag_line": "kcc20.ag:117",
+   "bytecode_at": [
+    1952,
+    2065,
+    2178
+   ],
+   "op_index": [
+    1494,
+    1593,
+    1692
+   ],
+   "check_opcode": "OpAdd",
+   "also_reached_from": [],
+   "meaning": "The running sum of the declared amounts must stay inside +-(2^63 - 1): checked addition in the engine.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-37",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "175",
+   "ag_line": "kcc20.ag:120",
+   "bytecode_at": [
+    2203
+   ],
+   "op_index": [
+    1717
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Sum of the declared amounts equals the sum of the input amounts.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-38",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "69-72",
+   "ag_line": "kcc20.ag:47-50",
+   "bytecode_at": [
+    2249
+   ],
+   "op_index": [
+    1756
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3837
+     ],
+     "op_index": [
+      3123
+     ]
+    }
+   ],
+   "meaning": "Owner scheme 0x00: the scheme witness is a Schnorr signature (64 bytes + 1 sighash-type byte) by the 32-byte key stored in the coin's owner field, over this input's signature hash.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-39",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "74",
+   "ag_line": "kcc20.ag:52",
+   "bytecode_at": [
+    2265
+   ],
+   "op_index": [
+    1770
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3853
+     ],
+     "op_index": [
+      3137
+     ]
+    }
+   ],
+   "meaning": "Owner scheme 0x01: the scheme witness is exactly 97 bytes (32 key + 65 signature).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-40",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "78",
+   "ag_line": "kcc20.ag:56 (p2pkh_hash: kcc20.ag:36-38)",
+   "bytecode_at": [
+    2284
+   ],
+   "op_index": [
+    1786
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3872
+     ],
+     "op_index": [
+      3153
+     ]
+    }
+   ],
+   "meaning": "Unkeyed BLAKE3 of the 32 key bytes at the start of the scheme witness equals owner.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-41",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "79",
+   "ag_line": "kcc20.ag:57",
+   "bytecode_at": [
+    2290
+   ],
+   "op_index": [
+    1792
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3878
+     ],
+     "op_index": [
+      3159
+     ]
+    }
+   ],
+   "meaning": "Owner scheme 0x01: bytes 32..97 of the scheme witness are a Schnorr signature by the key in bytes 0..32.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-42",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "81",
+   "ag_line": "kcc20.ag:59",
+   "bytecode_at": [
+    2310
+   ],
+   "op_index": [
+    1810
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3898
+     ],
+     "op_index": [
+      3177
+     ]
+    }
+   ],
+   "meaning": "Owner scheme 0x02: the scheme witness is exactly 98 bytes (33 key + 65 signature).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-43",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "85",
+   "ag_line": "kcc20.ag:63",
+   "bytecode_at": [
+    2329
+   ],
+   "op_index": [
+    1826
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3917
+     ],
+     "op_index": [
+      3193
+     ]
+    }
+   ],
+   "meaning": "Unkeyed BLAKE3 of the 33 key bytes at the start of the scheme witness equals owner.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-44",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "86",
+   "ag_line": "kcc20.ag:64",
+   "bytecode_at": [
+    2335
+   ],
+   "op_index": [
+    1832
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3923
+     ],
+     "op_index": [
+      3199
+     ]
+    }
+   ],
+   "meaning": "Owner scheme 0x02: bytes 33..98 of the scheme witness are an ECDSA signature (64 compact bytes + type byte) by the 33-byte key in bytes 0..33.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-45",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "88",
+   "ag_line": "kcc20.ag:66",
+   "bytecode_at": [
+    2354
+   ],
+   "op_index": [
+    1850
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3942
+     ],
+     "op_index": [
+      3217
+     ]
+    }
+   ],
+   "meaning": "Owner scheme 0x03: the scheme witness is exactly 1 byte (an input index 0..255).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-46",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "90-93",
+   "ag_line": "kcc20.ag:68-71",
+   "bytecode_at": [
+    2385
+   ],
+   "op_index": [
+    1875
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3973
+     ],
+     "op_index": [
+      3242
+     ]
+    }
+   ],
+   "meaning": "The script public key of the input at that index is exactly 0000 aa 20 <owner> 87: a version-0 P2SH coin whose script hash is owner.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-47",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "95",
+   "ag_line": "kcc20.ag:73",
+   "bytecode_at": [
+    2401
+   ],
+   "op_index": [
+    1890
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3989
+     ],
+     "op_index": [
+      3257
+     ]
+    }
+   ],
+   "meaning": "Owner scheme 0x04: the scheme witness is empty.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-48",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "96",
+   "ag_line": "kcc20.ag:74",
+   "bytecode_at": [
+    2407
+   ],
+   "op_index": [
+    1896
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3995
+     ],
+     "op_index": [
+      3263
+     ]
+    }
+   ],
+   "meaning": "At least one input of the transaction carries the covenant id stored in owner.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-49",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": "require_owner_authorized (KCC20.sil:66-100; inlined twice: transfer normal path with witness[1..], transfer_delegator with the whole witness)",
+   "origin": "source",
+   "sil_line": "98",
+   "ag_line": "kcc20.ag:76",
+   "bytecode_at": [
+    2410
+   ],
+   "op_index": [
+    1899
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [
+    {
+     "entry": "transfer_delegator",
+     "bytecode_at": [
+      3998
+     ],
+     "op_index": [
+      3266
+     ]
+    }
+   ],
+   "meaning": "The spent coin's own owner_scheme is one of 0x00..0x04.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-50",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "184",
+   "ag_line": "kcc20.ag:133",
+   "bytecode_at": [
+    2437
+   ],
+   "op_index": [
+    1922
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Path 0x01 on a coin whose borrow_scheme is 0x00 (disabled) is refused.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-51",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "186",
+   "ag_line": "kcc20.ag:135",
+   "bytecode_at": [
+    2455
+   ],
+   "op_index": [
+    1938
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Threshold scheme (0x01): nothing may follow the path byte.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-52",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "192-195",
+   "ag_line": "kcc20.ag:144-147",
+   "bytecode_at": [
+    2485
+   ],
+   "op_index": [
+    1964
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Signature scheme (0x02): the bytes after the path byte are a Schnorr signature by the key stored in borrow_guard.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-53",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "197",
+   "ag_line": "kcc20.ag:149",
+   "bytecode_at": [
+    2505
+   ],
+   "op_index": [
+    1980
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Hash-chain scheme (0x03): exactly 129 bytes follow the path byte (32 next guard + 32 one-time key + 65 signature).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-54",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "205-209",
+   "ag_line": "kcc20.ag:160-164",
+   "bytecode_at": [
+    2538
+   ],
+   "op_index": [
+    2006
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Unkeyed BLAKE3(next_guard || one_time_key) equals the coin's borrow_guard.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-55",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "210",
+   "ag_line": "kcc20.ag:165",
+   "bytecode_at": [
+    2543
+   ],
+   "op_index": [
+    2011
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Hash-chain scheme: a Schnorr signature by the revealed one-time key.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-56",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "212",
+   "ag_line": "kcc20.ag:167",
+   "bytecode_at": [
+    2548
+   ],
+   "op_index": [
+    2016
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "On the borrow path the spent coin's own borrow_scheme is one of 0x00..0x03.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-57",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "214",
+   "ag_line": "kcc20.ag:171",
+   "bytecode_at": [
+    2571
+   ],
+   "op_index": [
+    2035
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Borrow path: declared state 0 keeps the leader's owner.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-58",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "215",
+   "ag_line": "kcc20.ag:172",
+   "bytecode_at": [
+    2586
+   ],
+   "op_index": [
+    2048
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Borrow path: declared state 0 keeps the leader's owner_scheme.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-59",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "216",
+   "ag_line": "kcc20.ag:173",
+   "bytecode_at": [
+    2601
+   ],
+   "op_index": [
+    2061
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Borrow path: declared state 0 keeps the leader's borrow_scheme.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-60",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "217",
+   "ag_line": "kcc20.ag:174",
+   "bytecode_at": [
+    2616
+   ],
+   "op_index": [
+    2073
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Borrow path: borrow_guard of declared state 0 equals the expected next guard, byte for byte (the unchanged guard for schemes 0x01 and 0x02; the revealed next guard for 0x03).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-61",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "218-219",
+   "ag_line": "kcc20.ag:177-178",
+   "bytecode_at": [
+    2635
+   ],
+   "op_index": [
+    2090
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Borrow path: declared state 0 amount minus the leader's amount is strictly greater than the threshold (0, or for scheme 0x01 the first 8 guard bytes read as a script number; a negative one counts as 0).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-62",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "220",
+   "ag_line": "kcc20.ag:179",
+   "bytecode_at": [
+    2643
+   ],
+   "op_index": [
+    2098
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Borrow path: the value (sompi) of the first output bound to the leader is >= the value of the leader's coin.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-63",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "222",
+   "ag_line": "kcc20.ag:181",
+   "bytecode_at": [
+    2649
+   ],
+   "op_index": [
+    2104
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The path byte is 0x00 or 0x01 (byte comparison: 0x80 is not 0x00).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-64",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "224",
+   "ag_line": "generated (in front of the become, kcc20.ag:185)",
+   "bytecode_at": [
+    2663
+   ],
+   "op_index": [
+    2117
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The number of declared states equals the number of outputs bound to the leader.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-65",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": "225",
+   "ag_line": "generated",
+   "bytecode_at": [
+    2674
+   ],
+   "op_index": [
+    2128
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Guard the compiler adds to the for loop at KCC20.sil:225: the number of outputs bound to the leader is at most 3.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-66",
+   "contract": "KCC20",
+   "entry": "transfer",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "239-242",
+   "ag_line": "kcc20.ag:185 (next_outputs become KCC20 coins with next_states)",
+   "bytecode_at": [
+    2854,
+    3056,
+    3258
+   ],
+   "op_index": [
+    2279,
+    2452,
+    2625
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "For each output bound to the leader, in output order i = 0,1,2: its script public key is 0000 aa 20 BLAKE2b(prefix || state_i || suffix) 87, where state_i is built from the leader's gen__kcc20_template and next_states[i], and prefix (1 byte) and suffix (3885 bytes) are cut from the end of the leader's own signature script.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-67",
+   "contract": "KCC20",
+   "entry": "transfer_delegator",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    3339
+   ],
+   "op_index": [
+    2702
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Length of the witness is a multiple of 1.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-68",
+   "contract": "KCC20",
+   "entry": "transfer_delegator",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "254",
+   "ag_line": "generated (delegate entry; consumes clause kcc20.ag:191-193)",
+   "bytecode_at": [
+    3357
+   ],
+   "op_index": [
+    2712
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "At least two inputs carry the covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-69",
+   "contract": "KCC20",
+   "entry": "transfer_delegator",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "255",
+   "ag_line": "generated",
+   "bytecode_at": [
+    3363
+   ],
+   "op_index": [
+    2718
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The active input is NOT the first input of the family.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-70",
+   "contract": "KCC20",
+   "entry": "transfer_delegator",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "257-262",
+   "ag_line": "generated (typed read of the leader)",
+   "bytecode_at": [
+    3422
+   ],
+   "op_index": [
+    2766
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The first input of the family must be locked to the 4031-byte script found at the end of its signature script (same test as K-18, aimed at the leader).",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-71",
+   "contract": "KCC20",
+   "entry": "transfer_delegator",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "257-262",
+   "ag_line": "generated",
+   "bytecode_at": [
+    3515
+   ],
+   "op_index": [
+    2847
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The template hash of that slice equals the gen__kcc20_template field of the delegator's own state.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "K-72",
+   "contract": "KCC20",
+   "entry": "transfer_delegator",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "257-262",
+   "ag_line": "generated",
+   "bytecode_at": [],
+   "op_index": [],
+   "check_opcode": null,
+   "also_reached_from": [],
+   "meaning": "Decode step.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false,
+   "bytecode_range": [
+    {
+     "from": 3516,
+     "to": 3815
+    }
+   ]
+  },
+  {
+   "rule_id": "K-73",
+   "contract": "KCC20",
+   "entry": "transfer_delegator",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "265",
+   "ag_line": "generated (a delegate authorizes no outputs)",
+   "bytecode_at": [
+    3820
+   ],
+   "op_index": [
+    3108
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "No output is bound to the delegator input.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-01",
+   "contract": "PublicMint",
+   "entry": "dispatcher (all five entries)",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    2013
+   ],
+   "op_index": [
+    1606
+   ],
+   "check_opcode": "OpReturn",
+   "also_reached_from": [],
+   "meaning": "The last item pushed before the redeem script must be one of the five 4-byte tags. Anything else reaches OpReturn.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-02",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    166
+   ],
+   "op_index": [
+    18
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.amount push is at most 8 bytes long.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-03",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    173
+   ],
+   "op_index": [
+    24
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.owner push is exactly 32 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-04",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    179
+   ],
+   "op_index": [
+    30
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.owner_scheme push is exactly 1 byte.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-05",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    185
+   ],
+   "op_index": [
+    36
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.borrow_scheme push is exactly 1 byte.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-06",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    192
+   ],
+   "op_index": [
+    42
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.borrow_guard push is exactly 32 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-07",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    199
+   ],
+   "op_index": [
+    48
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.extension_commitment push is exactly 32 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-08",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    207
+   ],
+   "op_index": [
+    56
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Length of the hidden prefix argument is a multiple of 1.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-09",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    215
+   ],
+   "op_index": [
+    64
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Length of the hidden suffix argument is a multiple of 1.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-10",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "127",
+   "ag_line": "generated (entry without a consumes clause: public_mint.ag:13)",
+   "bytecode_at": [
+    223
+   ],
+   "op_index": [
+    72
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The minter is the only input of the transaction that carries its covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-11",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "130",
+   "ag_line": "generated (emits clause public_mint.ag:13-16)",
+   "bytecode_at": [
+    228
+   ],
+   "op_index": [
+    77
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Exactly two outputs are bound to the minter (next minter first, recipient second, in output order).",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-12",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "136",
+   "ag_line": "public_mint.ag:17",
+   "bytecode_at": [
+    239
+   ],
+   "op_index": [
+    88
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The minted amount is > 0.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-13",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "137",
+   "ag_line": "public_mint.ag:18",
+   "bytecode_at": [
+    245
+   ],
+   "op_index": [
+    94
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The minted amount is <= the per-mint limit mint_amount.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-14",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "138",
+   "ag_line": "public_mint.ag:19",
+   "bytecode_at": [
+    251
+   ],
+   "op_index": [
+    100
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The minted amount is at most the minter's remaining.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-15",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "139",
+   "ag_line": "public_mint.ag:21",
+   "bytecode_at": [
+    257
+   ],
+   "op_index": [
+    106
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient's extension_commitment equals the minter's.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-16",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": "require_valid_owner_scheme (PublicMint.sil:67-69; called from mint, line 140)",
+   "origin": "source",
+   "sil_line": "140 -> 68",
+   "ag_line": "public_mint.ag:24 -> kcc20.ag:29",
+   "bytecode_at": [
+    270
+   ],
+   "op_index": [
+    116
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient's owner_scheme, as an unsigned byte, is <= 4.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-17",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": "require_valid_borrow_scheme (PublicMint.sil:70-72; called from mint, line 141)",
+   "origin": "source",
+   "sil_line": "141 -> 71",
+   "ag_line": "public_mint.ag:25 -> kcc20.ag:33",
+   "bytecode_at": [
+    283
+   ],
+   "op_index": [
+    126
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient's borrow_scheme, as an unsigned byte, is <= 3.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-18",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "149",
+   "ag_line": "public_mint.ag:36",
+   "bytecode_at": [
+    302
+   ],
+   "op_index": [
+    144
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The value (sompi) of the first bound output equals the minter's value exactly.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-19",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "161",
+   "ag_line": "public_mint.ag:28-33, 40 (the minter output becomes a PublicMint coin with next_minter)",
+   "bytecode_at": [
+    396
+   ],
+   "op_index": [
+    223
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The first bound output is locked to the minter's own script with a state that keeps both template fields, mint_amount, owner and extension_commitment and lowers remaining by the minted amount; prefix (1 byte) and suffix (1868 bytes) are cut from the end of the minter's own signature script.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-20",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "174-180",
+   "ag_line": "public_mint.ag:41 (the recipient output becomes a KCC20 coin with recipient_state)",
+   "bytecode_at": [
+    451
+   ],
+   "op_index": [
+    266
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The two hidden call arguments gen__kcc20_prefix and gen__kcc20_suffix hash (BLAKE3 over le8(len) || prefix || le8(len) || suffix) to gen__kcc20_template stored in the minter's state.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-21",
+   "contract": "PublicMint",
+   "entry": "mint",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "174-180",
+   "ag_line": "public_mint.ag:41",
+   "bytecode_at": [
+    523
+   ],
+   "op_index": [
+    323
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The second bound output is 0000 aa 20 BLAKE2b(prefix || state || suffix) 87, the state built from the minter's gen__kcc20_template and recipient_state.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-22",
+   "contract": "PublicMint",
+   "entry": "split",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    576
+   ],
+   "op_index": [
+    372
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The take push is at most 8 bytes long.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-23",
+   "contract": "PublicMint",
+   "entry": "split",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    583
+   ],
+   "op_index": [
+    378
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The new_owner push is exactly 32 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-24",
+   "contract": "PublicMint",
+   "entry": "split",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "187",
+   "ag_line": "generated (public_mint.ag:46)",
+   "bytecode_at": [
+    591
+   ],
+   "op_index": [
+    386
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The minter is the only input carrying its covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-25",
+   "contract": "PublicMint",
+   "entry": "split",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "190",
+   "ag_line": "generated (emits clause public_mint.ag:46-49)",
+   "bytecode_at": [
+    596
+   ],
+   "op_index": [
+    391
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Exactly two outputs are bound to the minter (retained first, additional second).",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-26",
+   "contract": "PublicMint",
+   "entry": "split",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "196",
+   "ag_line": "public_mint.ag:50",
+   "bytecode_at": [
+    607
+   ],
+   "op_index": [
+    402
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The take argument is greater than 0.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-27",
+   "contract": "PublicMint",
+   "entry": "split",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "197",
+   "ag_line": "public_mint.ag:51",
+   "bytecode_at": [
+    615
+   ],
+   "op_index": [
+    410
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The take argument is at most half of the minter's remaining (OpDiv at 613, truncating).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-28",
+   "contract": "PublicMint",
+   "entry": "split",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "212",
+   "ag_line": "public_mint.ag:66",
+   "bytecode_at": [
+    641
+   ],
+   "op_index": [
+    436
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The value of the first bound output equals the minter's value exactly.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-29",
+   "contract": "PublicMint",
+   "entry": "split",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "224",
+   "ag_line": "public_mint.ag:53-58, 69 (the minter output becomes a PublicMint coin with retained)",
+   "bytecode_at": [
+    735
+   ],
+   "op_index": [
+    515
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The first bound output is locked to the minter's own script with a state that keeps both template fields, mint_amount, owner and extension_commitment and lowers remaining by take.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-30",
+   "contract": "PublicMint",
+   "entry": "split",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "236",
+   "ag_line": "public_mint.ag:59-64, 70 (the additional output becomes a PublicMint coin with added)",
+   "bytecode_at": [
+    832
+   ],
+   "op_index": [
+    594
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The second bound output is locked to the minter's own script with a state that keeps both template fields, mint_amount and extension_commitment, has take as its remaining and the new_owner argument as its owner.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-31",
+   "contract": "PublicMint",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    880
+   ],
+   "op_index": [
+    637
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The owner_signature push is exactly 65 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-32",
+   "contract": "PublicMint",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "243",
+   "ag_line": "generated (public_mint.ag:74)",
+   "bytecode_at": [
+    888
+   ],
+   "op_index": [
+    645
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The minter is the only input carrying its covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-33",
+   "contract": "PublicMint",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "246",
+   "ag_line": "generated (the entry declares no outputs, public_mint.ag:74)",
+   "bytecode_at": [
+    893
+   ],
+   "op_index": [
+    650
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "No output is bound to the minter.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-34",
+   "contract": "PublicMint",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "248",
+   "ag_line": "public_mint.ag:75",
+   "bytecode_at": [
+    898
+   ],
+   "op_index": [
+    655
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The minter's remaining is 0.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-35",
+   "contract": "PublicMint",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "249",
+   "ag_line": "public_mint.ag:76",
+   "bytecode_at": [
+    904
+   ],
+   "op_index": [
+    661
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "owner_signature is a Schnorr signature by the minter's owner key over this input's signature hash.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-36",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "260",
+   "ag_line": "generated (consumes clause public_mint.ag:80-82)",
+   "bytecode_at": [
+    940
+   ],
+   "op_index": [
+    685
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Exactly two inputs carry the covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-37",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "261",
+   "ag_line": "generated (leader position)",
+   "bytecode_at": [
+    946
+   ],
+   "op_index": [
+    691
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The surviving minter is the first family input.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-38",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "263-268",
+   "ag_line": "generated (typed read of the retiring minter)",
+   "bytecode_at": [
+    1005
+   ],
+   "op_index": [
+    739
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The second family input must be locked to the 2019-byte script found at the end of its signature script.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-39",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "263-268",
+   "ag_line": "generated",
+   "bytecode_at": [
+    1098
+   ],
+   "op_index": [
+    820
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Template hash of that slice (prefix 1, state 150, suffix 1868) equals gen__public_mint_template stored in the survivor.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-40",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "263-268",
+   "ag_line": "generated",
+   "bytecode_at": [],
+   "op_index": [],
+   "check_opcode": null,
+   "also_reached_from": [],
+   "meaning": "Decode step.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false,
+   "bytecode_range": [
+    {
+     "from": 1099,
+     "to": 1355
+    }
+   ]
+  },
+  {
+   "rule_id": "M-41",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "271",
+   "ag_line": "generated (emits clause public_mint.ag:82-84)",
+   "bytecode_at": [
+    1360
+   ],
+   "op_index": [
+    1044
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Exactly one output is bound to the survivor.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-42",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "275",
+   "ag_line": "generated (continuation closure, rule 5 of Argent's input group rules)",
+   "bytecode_at": [
+    1370
+   ],
+   "op_index": [
+    1054
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "All continuation outputs of the family are bound to the survivor.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-43",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "277",
+   "ag_line": "public_mint.ag:85",
+   "bytecode_at": [
+    1375
+   ],
+   "op_index": [
+    1059
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The survivor's remaining is >= 0.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-44",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "278",
+   "ag_line": "public_mint.ag:86",
+   "bytecode_at": [
+    1380
+   ],
+   "op_index": [
+    1064
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The retiring minter's remaining is >= 0.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-45",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "279",
+   "ag_line": "public_mint.ag:87",
+   "bytecode_at": [
+    1386
+   ],
+   "op_index": [
+    1070
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Both minters have the same mint_amount.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-46",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "280",
+   "ag_line": "public_mint.ag:88",
+   "bytecode_at": [
+    1391
+   ],
+   "op_index": [
+    1075
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Both minters have the same extension_commitment.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-47",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "engine",
+   "sil_line": "283",
+   "ag_line": "public_mint.ag:91",
+   "bytecode_at": [
+    1396
+   ],
+   "op_index": [
+    1080
+   ],
+   "check_opcode": "OpAdd",
+   "also_reached_from": [],
+   "meaning": "The sum of the two minters' remaining must stay inside +-(2^63 - 1): checked addition in the engine.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-48",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "288",
+   "ag_line": "public_mint.ag:97",
+   "bytecode_at": [
+    1409
+   ],
+   "op_index": [
+    1093
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The value of the bound output equals the survivor's value exactly.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-49",
+   "contract": "PublicMint",
+   "entry": "reclaim_into",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "300",
+   "ag_line": "public_mint.ag:90-95, 98 (the minter output becomes a PublicMint coin with next_minter)",
+   "bytecode_at": [
+    1505
+   ],
+   "op_index": [
+    1172
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The bound output is locked to the survivor's own script with a state that keeps both template fields, mint_amount, owner and extension_commitment and has the sum of the two minters' remaining as its remaining.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-50",
+   "contract": "PublicMint",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    1549
+   ],
+   "op_index": [
+    1211
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The owner_signature push is exactly 65 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "M-51",
+   "contract": "PublicMint",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "311",
+   "ag_line": "generated (delegate entry; consumes clause public_mint.ag:102-104)",
+   "bytecode_at": [
+    1567
+   ],
+   "op_index": [
+    1221
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "At least two inputs carry the covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-52",
+   "contract": "PublicMint",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "312",
+   "ag_line": "generated",
+   "bytecode_at": [
+    1573
+   ],
+   "op_index": [
+    1227
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The active input is NOT the first family input.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-53",
+   "contract": "PublicMint",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "314-319",
+   "ag_line": "generated (typed read of the leader)",
+   "bytecode_at": [
+    1632
+   ],
+   "op_index": [
+    1275
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The first family input must be locked to the 2019-byte script found at the end of its signature script.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-54",
+   "contract": "PublicMint",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "314-319",
+   "ag_line": "generated",
+   "bytecode_at": [
+    1725
+   ],
+   "op_index": [
+    1356
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Template hash of that slice equals gen__public_mint_template stored in the retiring minter.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-55",
+   "contract": "PublicMint",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "314-319",
+   "ag_line": "generated",
+   "bytecode_at": [],
+   "op_index": [],
+   "check_opcode": null,
+   "also_reached_from": [],
+   "meaning": "Decode step.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false,
+   "bytecode_range": [
+    {
+     "from": 1726,
+     "to": 1982
+    }
+   ]
+  },
+  {
+   "rule_id": "M-56",
+   "contract": "PublicMint",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "322",
+   "ag_line": "generated (a delegate authorizes no outputs)",
+   "bytecode_at": [
+    1987
+   ],
+   "op_index": [
+    1580
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "No output is bound to the retiring minter.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "M-57",
+   "contract": "PublicMint",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "324",
+   "ag_line": "public_mint.ag:105",
+   "bytecode_at": [
+    1993
+   ],
+   "op_index": [
+    1586
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "owner_signature is a Schnorr signature by the retiring minter's owner key over this input's signature hash.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-01",
+   "contract": "TokenSeed",
+   "entry": "dispatcher (all four entries)",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    1350
+   ],
+   "op_index": [
+    1044
+   ],
+   "check_opcode": "OpReturn",
+   "also_reached_from": [],
+   "meaning": "The last item pushed before the redeem script must be one of the four 4-byte tags. Anything else reaches OpReturn.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "S-02",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    148
+   ],
+   "op_index": [
+    16
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.amount push is at most 8 bytes long.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "S-03",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    155
+   ],
+   "op_index": [
+    22
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.owner push is exactly 32 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "S-04",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    161
+   ],
+   "op_index": [
+    28
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.owner_scheme push is exactly 1 byte.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "S-05",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    167
+   ],
+   "op_index": [
+    34
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.borrow_scheme push is exactly 1 byte.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "S-06",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    174
+   ],
+   "op_index": [
+    40
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.borrow_guard push is exactly 32 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "S-07",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    181
+   ],
+   "op_index": [
+    46
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient_state.extension_commitment push is exactly 32 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "S-08",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    189
+   ],
+   "op_index": [
+    54
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Length of the hidden prefix argument is a multiple of 1.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-09",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    197
+   ],
+   "op_index": [
+    62
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Length of the hidden suffix argument is a multiple of 1.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-10",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "123",
+   "ag_line": "generated (entry without a consumes clause: token_seed.ag:11)",
+   "bytecode_at": [
+    205
+   ],
+   "op_index": [
+    70
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The seed is the only input of the transaction that carries its covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-11",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "126",
+   "ag_line": "generated (emits clause token_seed.ag:11-14)",
+   "bytecode_at": [
+    210
+   ],
+   "op_index": [
+    75
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Exactly two outputs are bound to the seed (the seed again first, the recipient second).",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-12",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "132",
+   "ag_line": "token_seed.ag:15",
+   "bytecode_at": [
+    221
+   ],
+   "op_index": [
+    86
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The new coin's amount is 0 (numeric test).",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-13",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "133",
+   "ag_line": "token_seed.ag:16",
+   "bytecode_at": [
+    227
+   ],
+   "op_index": [
+    92
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient's extension_commitment equals the seed's.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-14",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": "require_valid_owner_scheme (TokenSeed.sil:65-67; called from create, line 134)",
+   "origin": "source",
+   "sil_line": "134 -> 66",
+   "ag_line": "token_seed.ag:17 -> kcc20.ag:29",
+   "bytecode_at": [
+    240
+   ],
+   "op_index": [
+    102
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient's owner_scheme, as an unsigned byte, is <= 4.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-15",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": "require_valid_borrow_scheme (TokenSeed.sil:68-70; called from create, line 135)",
+   "origin": "source",
+   "sil_line": "135 -> 69",
+   "ag_line": "token_seed.ag:18 -> kcc20.ag:33",
+   "bytecode_at": [
+    253
+   ],
+   "op_index": [
+    112
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The recipient's borrow_scheme, as an unsigned byte, is <= 3.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-16",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "136",
+   "ag_line": "token_seed.ag:20",
+   "bytecode_at": [
+    260
+   ],
+   "op_index": [
+    119
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The value (sompi) of the first bound output equals the seed's value exactly.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-17",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "138-141",
+   "ag_line": "token_seed.ag:23 (the seeder output continues the seed itself)",
+   "bytecode_at": [
+    267
+   ],
+   "op_index": [
+    126
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The first bound output has exactly the seed's own script public key (37 bytes compared): same script, hence the same state.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-18",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "154-160",
+   "ag_line": "token_seed.ag:24 (the recipient output becomes a KCC20 coin with recipient_state)",
+   "bytecode_at": [
+    320
+   ],
+   "op_index": [
+    169
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The two hidden call arguments gen__kcc20_prefix and gen__kcc20_suffix hash to gen__kcc20_template stored in the seed's state.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-19",
+   "contract": "TokenSeed",
+   "entry": "create",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "154-160",
+   "ag_line": "token_seed.ag:24",
+   "bytecode_at": [
+    391
+   ],
+   "op_index": [
+    226
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The second bound output is 0000 aa 20 BLAKE2b(prefix || state || suffix) 87, the state built from the seed's gen__kcc20_template and recipient_state.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-20",
+   "contract": "TokenSeed",
+   "entry": "split",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    432
+   ],
+   "op_index": [
+    262
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The new_owner push is exactly 32 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "S-21",
+   "contract": "TokenSeed",
+   "entry": "split",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "167",
+   "ag_line": "generated (token_seed.ag:28)",
+   "bytecode_at": [
+    440
+   ],
+   "op_index": [
+    270
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The seed is the only input carrying its covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-22",
+   "contract": "TokenSeed",
+   "entry": "split",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "170",
+   "ag_line": "generated (emits clause token_seed.ag:28-31)",
+   "bytecode_at": [
+    445
+   ],
+   "op_index": [
+    275
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Exactly two outputs are bound to the seed.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-23",
+   "contract": "TokenSeed",
+   "entry": "split",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "181",
+   "ag_line": "token_seed.ag:37",
+   "bytecode_at": [
+    462
+   ],
+   "op_index": [
+    292
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The value of the first bound output equals the seed's value exactly.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-24",
+   "contract": "TokenSeed",
+   "entry": "split",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "183-186",
+   "ag_line": "token_seed.ag:40 (the seeder output continues the seed itself)",
+   "bytecode_at": [
+    469
+   ],
+   "op_index": [
+    299
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The first bound output has exactly the seed's own script public key.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-25",
+   "contract": "TokenSeed",
+   "entry": "split",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "196",
+   "ag_line": "token_seed.ag:32-35, 41 (the additional output becomes a TokenSeed coin with added)",
+   "bytecode_at": [
+    543
+   ],
+   "op_index": [
+    360
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The second bound output is locked to the seed's own script with a state that keeps both template fields and extension_commitment and has the new_owner argument as its owner; prefix (1 byte) and suffix (1222 bytes) are cut from the end of the seed's own signature script.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-26",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "207",
+   "ag_line": "generated (consumes clause token_seed.ag:46-48)",
+   "bytecode_at": [
+    585
+   ],
+   "op_index": [
+    390
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Exactly two inputs carry the covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-27",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "208",
+   "ag_line": "generated (leader position)",
+   "bytecode_at": [
+    591
+   ],
+   "op_index": [
+    396
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The surviving seed is the first family input.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-28",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "210-215",
+   "ag_line": "generated (typed read of the retiring seed)",
+   "bytecode_at": [
+    650
+   ],
+   "op_index": [
+    444
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The second family input must be locked to the 1355-byte script found at the end of its signature script.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-29",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "210-215",
+   "ag_line": "generated",
+   "bytecode_at": [
+    743
+   ],
+   "op_index": [
+    525
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Template hash of that slice (prefix 1, state 132, suffix 1222) equals gen__token_seed_template stored in the survivor.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-30",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "210-215",
+   "ag_line": "generated",
+   "bytecode_at": [],
+   "op_index": [],
+   "check_opcode": null,
+   "also_reached_from": [],
+   "meaning": "Decode step.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false,
+   "bytecode_range": [
+    {
+     "from": 744,
+     "to": 914
+    }
+   ]
+  },
+  {
+   "rule_id": "S-31",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "218",
+   "ag_line": "generated (emits clause token_seed.ag:48-50)",
+   "bytecode_at": [
+    919
+   ],
+   "op_index": [
+    675
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Exactly one output is bound to the survivor.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-32",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "222",
+   "ag_line": "generated (continuation closure, rule 5 of Argent's input group rules)",
+   "bytecode_at": [
+    929
+   ],
+   "op_index": [
+    685
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "All continuation outputs of the family are bound to the survivor.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-33",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "224",
+   "ag_line": "token_seed.ag:51",
+   "bytecode_at": [
+    934
+   ],
+   "op_index": [
+    690
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "Both seeds have the same extension_commitment.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-34",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "225",
+   "ag_line": "token_seed.ag:52",
+   "bytecode_at": [
+    940
+   ],
+   "op_index": [
+    696
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The value of the bound output equals the survivor's value exactly.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-35",
+   "contract": "TokenSeed",
+   "entry": "reclaim",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "227-230",
+   "ag_line": "token_seed.ag:53 (the seeder output continues the seed itself)",
+   "bytecode_at": [
+    946
+   ],
+   "op_index": [
+    702
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The bound output has exactly the survivor's own script public key.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-36",
+   "contract": "TokenSeed",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "silverc",
+   "sil_line": null,
+   "ag_line": "generated",
+   "bytecode_at": [
+    976
+   ],
+   "op_index": [
+    727
+   ],
+   "check_opcode": "OpNumEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The owner_signature push is exactly 65 bytes.",
+   "only_via_call_bytes": true,
+   "needs_raw_bytes": true
+  },
+  {
+   "rule_id": "S-37",
+   "contract": "TokenSeed",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "241",
+   "ag_line": "generated (delegate entry; consumes clause token_seed.ag:56-58)",
+   "bytecode_at": [
+    994
+   ],
+   "op_index": [
+    737
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "At least two inputs carry the covenant id.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-38",
+   "contract": "TokenSeed",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "242",
+   "ag_line": "generated",
+   "bytecode_at": [
+    1000
+   ],
+   "op_index": [
+    743
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "The active input is NOT the first family input.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-39",
+   "contract": "TokenSeed",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "244-249",
+   "ag_line": "generated (typed read of the leader)",
+   "bytecode_at": [
+    1059
+   ],
+   "op_index": [
+    791
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "The first family input must be locked to the 1355-byte script found at the end of its signature script.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-40",
+   "contract": "TokenSeed",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "244-249",
+   "ag_line": "generated",
+   "bytecode_at": [
+    1152
+   ],
+   "op_index": [
+    872
+   ],
+   "check_opcode": "OpEqualVerify",
+   "also_reached_from": [],
+   "meaning": "Template hash of that slice equals gen__token_seed_template stored in the retiring seed.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-41",
+   "contract": "TokenSeed",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent+silverc",
+   "sil_line": "244-249",
+   "ag_line": "generated",
+   "bytecode_at": [],
+   "op_index": [],
+   "check_opcode": null,
+   "also_reached_from": [],
+   "meaning": "Decode step.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false,
+   "bytecode_range": [
+    {
+     "from": 1153,
+     "to": 1323
+    }
+   ]
+  },
+  {
+   "rule_id": "S-42",
+   "contract": "TokenSeed",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "argent",
+   "sil_line": "252",
+   "ag_line": "generated (a delegate authorizes no outputs)",
+   "bytecode_at": [
+    1328
+   ],
+   "op_index": [
+    1022
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "No output is bound to the retiring seed.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  },
+  {
+   "rule_id": "S-43",
+   "contract": "TokenSeed",
+   "entry": "reclaim_delegator",
+   "helper": null,
+   "origin": "source",
+   "sil_line": "254",
+   "ag_line": "token_seed.ag:59",
+   "bytecode_at": [
+    1334
+   ],
+   "op_index": [
+    1028
+   ],
+   "check_opcode": "OpVerify",
+   "also_reached_from": [],
+   "meaning": "owner_signature is a Schnorr signature by the retiring seed's owner key over this input's signature hash.",
+   "only_via_call_bytes": false,
+   "needs_raw_bytes": false
+  }
+ ],
+ "lists": {
+  "needs_raw_call_bytes": [
+   "K-01",
+   "K-03",
+   "K-04",
+   "K-05",
+   "K-07",
+   "K-09",
+   "K-10",
+   "K-11",
+   "K-12",
+   "K-13",
+   "M-01",
+   "M-02",
+   "M-03",
+   "M-04",
+   "M-05",
+   "M-06",
+   "M-07",
+   "M-22",
+   "M-23",
+   "M-31",
+   "M-50",
+   "S-01",
+   "S-02",
+   "S-03",
+   "S-04",
+   "S-05",
+   "S-06",
+   "S-07",
+   "S-20",
+   "S-36"
+  ],
+  "decided_by_call_values_only": [
+   "K-25",
+   "K-32",
+   "K-33",
+   "K-34",
+   "K-35",
+   "K-36",
+   "K-37",
+   "K-39",
+   "K-40",
+   "K-42",
+   "K-43",
+   "K-45",
+   "K-47",
+   "K-50",
+   "K-51",
+   "K-53",
+   "K-54",
+   "K-57",
+   "K-58",
+   "K-59",
+   "K-60",
+   "K-61",
+   "K-63",
+   "M-12",
+   "M-13",
+   "M-14",
+   "M-15",
+   "M-16",
+   "M-17",
+   "M-20",
+   "M-26",
+   "M-27",
+   "S-12",
+   "S-13",
+   "S-14",
+   "S-15",
+   "S-18"
+  ],
+  "signature_checks": [
+   "K-38",
+   "K-41",
+   "K-44",
+   "K-52",
+   "K-55",
+   "M-35",
+   "M-57",
+   "S-43"
+  ],
+  "engine_implicit": [
+   "K-30",
+   "K-36",
+   "M-47"
+  ]
+ }
+}

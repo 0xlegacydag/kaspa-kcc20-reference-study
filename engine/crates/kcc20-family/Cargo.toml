@@ -1,0 +1,25 @@
+[package]
+name = "kcc20-family"
+description = "The pinned KCC-20 reference contracts as data: scripts, states, calls and transaction shapes"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+argent = { workspace = true }
+argent-runtime = { workspace = true }
+silverscript-lang = { workspace = true }
+kaspa-consensus-core = { workspace = true }
+kaspa-txscript = { workspace = true }
+kaspa-txscript-errors = { workspace = true }
+kaspa-hashes = { workspace = true }
+blake3 = { workspace = true }
+secp256k1 = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+faster-hex = { workspace = true }
+thiserror = { workspace = true }
+tempfile = { workspace = true }
+blake2b_simd = { workspace = true }

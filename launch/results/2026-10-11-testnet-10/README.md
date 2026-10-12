@@ -35,7 +35,7 @@ the authors of the reference.
 - **Honest twin** - a forbidden move with its one wrong thing put right; built and judged
   offline, not sent.
 - **Gate** - the builder's offline stand-in for a node (the builder is the program that
-  built and signed the chain; it is not in this repository).
+  built and signed the chain: [`engine/`](../../../engine) in this repository).
 
 ## The run
 

@@ -1,0 +1,9 @@
+# The ported functions are meant to be read next to rusty-kaspa at the pinned revision,
+# so this crate is formatted with the settings of that repository (its .rustfmt.toml).
+# Only newline_style differs: "auto" there, "Unix" here.
+max_width = 135
+use_field_init_shorthand = true
+use_try_shorthand = true
+use_small_heuristics = "Max"
+newline_style = "Unix"
+edition = "2024"

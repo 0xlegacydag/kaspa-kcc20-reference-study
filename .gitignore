@@ -9,3 +9,6 @@ __pycache__/
 .env
 *.key
 tn10-*
+
+# a local clone of the KCC20 reference, read by engine/ (see engine/README.md)
+/kcc20-reference/

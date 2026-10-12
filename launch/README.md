@@ -3,9 +3,10 @@
 Two programs take a chain of KCC-20 transactions to Kaspa **testnet-10**. Test network
 only: the sender accepts no other. KAS on this page always means test KAS of testnet-10.
 
-- The **builder** (Rust; not in this repository) works offline. It holds the keys, builds
-  and signs every transaction of the run, runs each one against the node rules of
-  `node-gate`, its offline stand-in for a node, and writes the chain file.
+- The **builder** (Rust; [`../engine`](../engine), the test file
+  `crates/checks/tests/launch_real.rs`) works offline. It holds the keys, builds and signs
+  every transaction of the run, runs each one against the node rules of `node-gate`, its
+  offline stand-in for a node, and writes the chain file.
 - The **sender** (`launch_send.py`, Python with the Kaspa SDK, package `kaspa` 2.1.0) holds
   no keys and has no option that takes one. It reads the network, checks the chain file by
   its own rules, submits the transactions one by one and records what the node answers.
@@ -28,7 +29,8 @@ python launch_send.py status chain.json --party ...
    request carries the node's priority estimate, rounded up, or the rate given with
    `--feerate`. It refuses when there is no such coin or more than one, and never
    overwrites a file.
-2. The builder makes the chain file from the request.
+2. The builder makes the chain file from the request; how it is started is in
+   [`../engine/README.md`](../engine/README.md) under "Building a chain".
 3. `check` verifies the chain file offline; `--online` also reads the network. The parties'
    addresses come from the command line: they are what the file is measured against.
 4. `send` runs the whole check with the network first, then submits the steps in order and,
@@ -39,7 +41,7 @@ python launch_send.py status chain.json --party ...
    unspent, and the parties' balances.
 
 `--harness DIR` (or the environment variable `KCC20_HARNESS_DIR`) names the folder of
-`kcc20_harness.py` (not in this repository either), a second tool that compiles the
+`kcc20_harness.py` (not in this repository), a second tool that compiles the
 reference's contracts with the SDK, independently of the builder: with it the lock of
 every covenant output is recomputed from the state the file gives for it. `check` runs
 without it, but then prints `NOT CHECKED` for the locks, and its last line says so.
@@ -160,13 +162,17 @@ Offline, against a fake node. Two chain files are under test:
 - `tests/fixture-chain.json`, made by `tests/make_fixture.py` from a rehearsal plan of the
   builder: its transaction ids are true ids of its fields and its covenant states are the
   rehearsal's, while its signature scripts are placeholders and its three probes are made
-  up (the head of that script says what else is made up). The plan file is not in this
-  repository: the script is kept to show how the fixture was made and cannot be rerun from
-  here. Run with one argument it would overwrite the fixture;
+  up (the head of that script says what else is made up). The plan file is the
+  `launch-plan.json` that the test `launch_dry_run` of [`../engine`](../engine) writes into
+  `engine/target/check-results/`; given that file and a second argument for the output,
+  the script writes this fixture again, byte for byte. Run with one argument it would
+  overwrite the fixture;
 - `tests/fixture-selftest-955.json`, a chain file written by the builder's own self-test
   with made-up keys; none of its transactions was ever sent. Here the signature scripts of
   its covenant spends are replaced by placeholders of the same length, which changes no
-  transaction id.
+  transaction id. The builder in `engine/` words the sentence in the field `fee_rule`
+  differently from this file; its self-test gives the same 16 transaction ids and the same
+  key signatures.
 
 The tests of `send` use a stand-in for the harness that knows the locks of these two files.
 The tests that recompute the locks for real need the harness: set `KCC20_HARNESS_DIR` to

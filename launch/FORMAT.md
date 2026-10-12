@@ -9,9 +9,10 @@ testnet-10.
   network, and read by the builder.
 - The **chain** is written by the builder, offline, and read by the sender.
 
-The builder is a Rust program that is not in this repository. It builds and signs every
-transaction and runs each one against the node rules of `node-gate`, its offline stand-in
-for a node: the node's own script engine and mass calculator, with the rules around them.
+The builder is a Rust program, the test file `launch_real.rs` in [`../engine`](../engine).
+It builds and signs every transaction and runs each one against the node rules of
+`node-gate`, its offline stand-in for a node: the node's own script engine and mass
+calculator, with the rules around them.
 The sender is `launch_send.py` (Python, Kaspa SDK). It holds no keys: every signature is
 already in
 the chain file. It rebuilds every transaction from the fields, checks the file by its own
